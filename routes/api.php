@@ -12,3 +12,5 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('signup', [AuthController::class, 'signUp']);
 Route::post('signin', [AuthController::class, 'signIn']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+Route::post('logout', [AuthController::class,'logout'])->middleware('auth:sanctum');
