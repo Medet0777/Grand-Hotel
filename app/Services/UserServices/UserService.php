@@ -17,16 +17,18 @@ use Illuminate\Support\Facades\Hash;
         $this->userRepository = $userRepository;
     }
 
-    public function signUp(array $data): JsonResponse
+    public function createUser(array $data): \App\Models\User
     {
         $data['password'] = Hash::make($data['password']);
+        $data['email_verified_at'] = null;
+        return $this->userRepository->create($data);
+    }
 
-        $user = $this->userRepository->create($data);
-
-        return response()->json([
-           'message' => 'User Created Successfully',
-           'user' => new  UserResource($user),
-        ],201);
+    public function signUp(array $data): JsonResponse // Этот метод больше не используется для прямой регистрации
+    {
+        // Возможно, оставим его пустым или удалим, если вся логика перенесена в контроллер
+        // return $this->createUser($data); // Предыдущая логика создания пользователя
+        throw new \Exception('This method should not be called directly.');
     }
 
     public function signIn(array $data): JsonResponse

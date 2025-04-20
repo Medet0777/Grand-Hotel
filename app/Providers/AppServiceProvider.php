@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\UserContracts\OtpServiceContract;
 use App\Contracts\UserContracts\UserRepositoryContract;
 use App\Contracts\UserContracts\UserServiceContract;
 use App\Repositories\UserRepository\UserRepository;
+use App\Services\UserServices\OtpService;
 use App\Services\UserServices\UserService;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);
         $this->app->bind(UserServiceContract::class, UserService::class);
+        $this->app->bind(OtpServiceContract::class, OtpService::class);
     }
 
     /**
