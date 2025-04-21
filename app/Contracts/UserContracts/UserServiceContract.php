@@ -3,7 +3,7 @@
 namespace App\Contracts\UserContracts;
 
 use Illuminate\Http\JsonResponse;
-use App\Models\User;
+
 
 interface UserServiceContract
 {
@@ -11,7 +11,6 @@ interface UserServiceContract
 
     public function signIn(array $data): JsonResponse;
 
-    public function sendOtp(string $email): JsonResponse;
 
     public function resetPassword(string $email, string $newPassword): JsonResponse;
 }

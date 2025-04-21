@@ -23,7 +23,8 @@ class PasswordResetRequest extends FormRequest
     {
         return [
             'email' => 'required|email|exists:users,email',
-            'new_password' => 'required|string|min:8|confirmed'
+            'new_password' => 'required|string|min:8|confirmed',
+            'reset_token' => 'required|string', // Добавляем правило для временного токена
         ];
     }
 
@@ -32,6 +33,7 @@ class PasswordResetRequest extends FormRequest
         return [
             'email.required' => 'Поле "Email" обязательно для заполнения.',
             'new_password.required' => 'Поле "Новый пароль" обязательно для заполнения.',
+            'reset_token.required' => 'Временный токен для сброса пароля отсутствует.', // Сообщение для нового поля
         ];
     }
 }
