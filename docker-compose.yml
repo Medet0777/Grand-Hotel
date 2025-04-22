@@ -1,0 +1,55 @@
+
+services:
+    nginx:
+        image: nginx:latest
+        volumes:
+            - ./:/var/www
+            - ./_docker/nginx/conf.d:/etc/nginx/conf.d
+        ports:
+            - 8876:80
+        depends_on:
+            - app
+        container_name: shop_nginx
+        networks:
+            - hotel_network
+
+
+
+    app:
+        build:
+            context: .
+            dockerfile: _docker/app/Dockerfile
+        volumes:
+            - ./:/var/www
+        container_name: shop_app
+        depends_on:
+            - db
+        networks:
+            - hotel_network
+        environment:
+            DB_CONNECTION: pgsql
+            DB_HOST: db
+            DB_PORT: 5432
+            DB_DATABASE: hotel_booking_db
+            DB_USERNAME: user
+            DB_PASSWORD: 4510 # Измените на более безопасный пароль
+            COMPOSER_MEMORY_LIMIT: -1 # Решает проблемы с нехваткой памяти при установке зависимостей
+
+    db:
+        image: postgres:15-alpine # Используем образ PostgreSQL
+        restart: always
+        volumes:
+            - ./tmp/db:/var/lib/postgresql/data # Обновленный путь для данных PostgreSQL
+        environment:
+            POSTGRES_DB: hotel_booking_db
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: 4510 # Измените на более безопасный пароль
+        ports:
+            - "5433:5432" # Стандартный порт PostgreSQL
+        container_name: shop_db
+        networks:
+            - hotel_network
+
+networks:
+    hotel_network:
+        name: hotel_network
