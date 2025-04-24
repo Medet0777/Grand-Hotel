@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Notifications\OtpNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+
 
 class OtpService implements OtpServiceContract
 {
@@ -22,7 +22,7 @@ class OtpService implements OtpServiceContract
     public function verify(User $user, string $otp): bool
     {
         $cachedOtp = Cache::get($this->getCacheKey($user));
-        return $cachedOtp === $otp; // Теперь мы сравниваем с $otp, который был передан в метод
+        return hash_equals($cachedOtp, $otp);
     }
 
     public function clear(User $user): void
