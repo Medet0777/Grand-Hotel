@@ -2,6 +2,7 @@
 
 namespace App\Services\UserServices;
 
+use App\Exceptions\InvalidCredentialsException;
 use App\Facades\Repository;
 use App\Facades\Service;
 use App\Contracts\UserContracts\UserServiceContract;
@@ -36,7 +37,7 @@ class UserService implements UserServiceContract
         $user = Repository::user()->findByEmail($data->email);
 
         if (!$user || !Hash::check($data->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            throw new InvalidCredentialsException();
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
