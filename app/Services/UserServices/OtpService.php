@@ -23,11 +23,9 @@ class OtpService implements OtpServiceContract
     {
         $cachedOtp = Cache::get($this->getCacheKey($user));
 
-        if (!$cachedOtp) {
-            return false;
-        }
+        $cachedOtp = Cache::get($this->getCacheKey($user));
 
-        return hash_equals($cachedOtp, $otp);
+        return $cachedOtp === $otp;
     }
 
     public function clear(User $user): void
