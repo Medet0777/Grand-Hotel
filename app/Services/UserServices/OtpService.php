@@ -22,6 +22,11 @@ class OtpService implements OtpServiceContract
     public function verify(User $user, string $otp): bool
     {
         $cachedOtp = Cache::get($this->getCacheKey($user));
+
+        if (!$cachedOtp) {
+            return false;
+        }
+
         return hash_equals($cachedOtp, $otp);
     }
 
