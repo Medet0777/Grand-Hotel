@@ -222,7 +222,7 @@ class AuthController extends Controller
 
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $user = Repository::user()->findById($request->id);
+        $user = Repository::user()->findById($request->user_id);
 
         if ($resetToken = Service::user()->verifyOtpForPasswordReset($user, $request->otp)) {
             return response()->json([
