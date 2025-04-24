@@ -198,7 +198,11 @@ class AuthController extends Controller
      */
     public function sendOtp(SendOtpRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = $this->userRepository->findByEmail($request->email);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
         $this->otpService->generateAndSend($user);
         return response()->json(['message' => 'OTP sent to your email']);
     }
@@ -232,7 +236,7 @@ class AuthController extends Controller
 
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $user = User::findOrFail($request->input('user_id'));
+        $user = $this->userRepository->findById($request->id);
 
         if ($resetToken = $this->userService->verifyOtpForPasswordReset($user, $request->otp)) {
             return response()->json([
@@ -274,7 +278,7 @@ class AuthController extends Controller
 
     public function verifyRegistrationOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $user = User::findOrFail($request->input('user_id'));
+        $user = $this->userRepository->findById($request->id);
         return $this->userService->verifyRegistrationOtp($user, $request->otp);
     }
 }

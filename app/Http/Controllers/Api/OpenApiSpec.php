@@ -15,7 +15,7 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @OA\Server(
- *     url="http://localhost/api",
+ *     url="https://grand-hotel-production.up.railway.app/api",
  *     description="Local API Server"
  * )
  */

@@ -11,4 +11,5 @@ interface OtpServiceContract
 
     public function clear(User $user): void;
 
+
 }
