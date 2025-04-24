@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'aliases' => [
+        'Service' => App\Facades\Service::class,
+        'Repository' => App\Facades\Repository::class,
+    ],
+
 ];

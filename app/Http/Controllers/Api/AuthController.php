@@ -2,33 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Contracts\UserContracts\OtpServiceContract;
+use App\Facades\Service;
+use App\Facades\Repository;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordResetRequest;
 use App\Http\Requests\SendOtpRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\VerifyOtpRequest;
-use App\Models\User;
-use App\Services\UserServices\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
-    protected UserService $userService;
-    protected OtpServiceContract $otpService;
-    protected $userRepository;
 
-
-
-    public function __construct(UserService $userService, OtpServiceContract $otpService,$userRepository)
-    {
-        $this->userService = $userService;
-        $this->otpService = $otpService;
-        $this->userRepository = $userRepository;
-    }
 
     /**
      * @OA\Post(
@@ -59,8 +47,9 @@ class AuthController extends Controller
     public function signUp(UserCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $user = $this->userService->createUser($data);
-        $this->otpService->generateAndSend($user);
+        Service::user()->createUser();
+        $user = Service::user()->createUser($data);
+        Service::otp()->generateAndSend($user);
 
         return response()->json([
             'message' => 'Registration successful. Please verify your email using the OTP sent to your address.',
@@ -97,7 +86,7 @@ class AuthController extends Controller
     public function signIn(UserLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
-        return $this->userService->signIn($data);
+        return Service::user()->signIn($data);
     }
 
     /**
@@ -131,20 +120,18 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        $user = $this->userRepository->findByEmail($data['email']);
+        $user = Repository::user()->findByEmail($data['email']);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $resetToken = $request->input('reset_token');
-
-        if (!$this->userService->validateResetToken($user, $resetToken)) {
+        if (!Service::user()->validateResetToken($user, $data['reset_token'])) {
             return response()->json(['message' => 'Invalid or expired reset token'], 400);
         }
 
-        $response = $this->userService->resetPassword($data['email'], $data['new_password']);
-        $this->userService->clearResetToken($user);
+        $response = Service::user()->resetPassword($data['email'], $data['new_password']);
+        Service::user()->clearResetToken($user);
 
         return $response;
     }
@@ -198,12 +185,13 @@ class AuthController extends Controller
      */
     public function sendOtp(SendOtpRequest $request): JsonResponse
     {
-        $user = $this->userRepository->findByEmail($request->email);
+        $user = Repository::user()->findByEmail($request->email);
+
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $this->otpService->generateAndSend($user);
+        Service::otp()->generateAndSend($user);
         return response()->json(['message' => 'OTP sent to your email']);
     }
 
@@ -236,9 +224,9 @@ class AuthController extends Controller
 
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $user = $this->userRepository->findById($request->id);
+        $user = Repository::user()->findById($request->id);
 
-        if ($resetToken = $this->userService->verifyOtpForPasswordReset($user, $request->otp)) {
+        if ($resetToken = Service::user()->verifyOtpForPasswordReset($user, $request->otp)) {
             return response()->json([
                 'message' => 'OTP verified successfully. You can now reset your password.',
                 'reset_token' => $resetToken,
@@ -278,7 +266,7 @@ class AuthController extends Controller
 
     public function verifyRegistrationOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $user = $this->userRepository->findById($request->id);
-        return $this->userService->verifyRegistrationOtp($user, $request->otp);
+        $user = Repository::user()->findById($request->id);
+        return Service::user()->verifyRegistrationOtp($user, $request->otp);
     }
 }
