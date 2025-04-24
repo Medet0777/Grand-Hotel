@@ -24,12 +24,7 @@ class UserService implements UserServiceContract
 
     public function createUser(CreateUserDTO $data): User
     {
-        return Repository::user()->create([
-            'name' => $data->name,
-            'email' => $data->email,
-            'password' => Hash::make($data->password),
-            'email_verified_at' => null
-        ]);
+        return Repository::user()->create($data);
     }
 
     public function signIn(SignInDTO $data): JsonResponse
