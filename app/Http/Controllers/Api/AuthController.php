@@ -49,7 +49,6 @@ class AuthController extends Controller
         $data = $request->validated();
         $user = Service::user()->createUser($data);
         Service::otp()->generateAndSend($user);
-
         return response()->json([
             'message' => 'Registration successful. Please verify your email using the OTP sent to your address.',
             'user_id' => $user->id,
@@ -265,7 +264,8 @@ class AuthController extends Controller
 
     public function verifyRegistrationOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $user = Repository::user()->findById($request->id);
+        $user = Repository::user()->findById($request->user_id);
+
         return Service::user()->verifyRegistrationOtp($user, $request->otp);
     }
 }
