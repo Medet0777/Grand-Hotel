@@ -12,7 +12,10 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\VerifyOtpRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use OpenApi\Annotations as OA;
+use App\Http\DTO\User\CreateUserDTO;
+use App\Http\DTO\User\SignInDTO;
+use App\Http\DTO\User\ResetPasswordDTO;
+
 
 class AuthController extends Controller
 {
@@ -46,9 +49,10 @@ class AuthController extends Controller
      */
     public function signUp(UserCreateRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $user = Service::user()->createUser($data);
+        $dto = CreateUserDTO::fromRequest($request);
+        $user = Service::user()->createUser($dto);
         Service::otp()->generateAndSend($user);
+
         return response()->json([
             'message' => 'Registration successful. Please verify your email using the OTP sent to your address.',
             'user_id' => $user->id,
@@ -83,8 +87,8 @@ class AuthController extends Controller
      */
     public function signIn(UserLoginRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        return Service::user()->signIn($data);
+        $dto = SignInDTO::fromRequest($request);
+        return Service::user()->signIn($dto);
     }
 
     /**
@@ -116,19 +120,18 @@ class AuthController extends Controller
      */
     public function resetPassword(PasswordResetRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $dto = ResetPasswordDTO::fromRequest($request);
 
-        $user = Repository::user()->findByEmail($data['email']);
-
+        $user = Repository::user()->findByEmail($dto->email);
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        if (!Service::user()->validateResetToken($user, $data['reset_token'])) {
+        if (!Service::user()->validateResetToken($user, $dto->resetToken)) {
             return response()->json(['message' => 'Invalid or expired reset token'], 400);
         }
 
-        $response = Service::user()->resetPassword($data['email'], $data['new_password']);
+        $response = Service::user()->resetPassword($dto);
         Service::user()->clearResetToken($user);
 
         return $response;

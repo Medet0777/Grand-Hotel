@@ -11,24 +11,31 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Http\DTO\User\CreateUserDTO;
+use App\Http\DTO\User\SignInDTO;
+use App\Http\DTO\User\ResetPasswordDTO;
 
 
 class UserService implements UserServiceContract
 {
 
 
-    public function createUser(array $data): User
+    public function createUser(CreateUserDTO $data): User
     {
-        $data['password'] = Hash::make($data['password']);
-        $data['email_verified_at'] = null;
-        return Repository::user()->create($data);
+        return Repository::user()->create([
+            'name' => $data->name,
+            'email' => $data->email,
+            'password' => Hash::make($data->password),
+            'email_verified_at' => null
+        ]);
     }
 
-    public function signIn(array $data): JsonResponse
+    public function signIn(SignInDTO $data): JsonResponse
     {
-        $user = Repository::user()->findByEmail($data['email']);
+        $user = Repository::user()->findByEmail($data->email);
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (!$user || !Hash::check($data->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
@@ -41,15 +48,15 @@ class UserService implements UserServiceContract
         ]);
     }
 
-    public function resetPassword(string $email, string $newPassword): JsonResponse
+    public function resetPassword(ResetPasswordDTO $data): JsonResponse
     {
-        $user = Repository::user()->findByEmail($email);
+        $user = Repository::user()->findByEmail($data->email);
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            throw new NotFoundHttpException();
         }
 
-        $user->password = Hash::make($newPassword);
+        $user->password = Hash::make($data->newPassword);
         Repository::user()->save($user);
 
         return response()->json(['message' => 'Password successfully updated', 'user' => new UserResource($user)]);

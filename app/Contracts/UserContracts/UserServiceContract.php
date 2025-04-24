@@ -2,18 +2,19 @@
 
 namespace App\Contracts\UserContracts;
 
+use App\Http\DTO\User\CreateUserDTO;
+use App\Http\DTO\User\ResetPasswordDTO;
+use App\Http\DTO\User\SignInDTO;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
-
 interface UserServiceContract
 {
+    public function signIn(SignInDTO $data): JsonResponse;
 
-    public function signIn(array $data): JsonResponse;
+    public function createUser(CreateUserDTO $data): User;
 
-    public function createUser(array $data): User;
-
-    public function resetPassword(string $email, string $newPassword,): JsonResponse;
+    public function resetPassword(ResetPasswordDTO $data): JsonResponse;
 
     public function verifyOtpForPasswordReset(User $user, string $otp): ?string;
 
