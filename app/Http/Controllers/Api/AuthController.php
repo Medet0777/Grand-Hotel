@@ -47,7 +47,6 @@ class AuthController extends Controller
     public function signUp(UserCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        Service::user()->createUser();
         $user = Service::user()->createUser($data);
         Service::otp()->generateAndSend($user);
 
