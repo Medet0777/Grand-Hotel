@@ -18,6 +18,11 @@ class UserRepository implements UserRepositoryContract
         return User::where('email', $email)->first();
     }
 
+    public function findById(int $id): User
+    {
+        return User::findOrFail($id);
+    }
+
     public function create(array $data): User
     {
         return User::create($data);
@@ -34,5 +39,10 @@ class UserRepository implements UserRepositoryContract
     {
         $user = User::findOrFail($id);
         return $user->delete();
+    }
+
+    public function save(User $user): void
+    {
+        $user->save();
     }
 }

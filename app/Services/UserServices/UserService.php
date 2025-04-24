@@ -31,11 +31,6 @@ class UserService implements UserServiceContract
         return $this->userRepository->create($data);
     }
 
-    public function signUp(array $data): JsonResponse
-    {
-        throw new \Exception('This method should not be called directly.');
-    }
-
     public function signIn(array $data): JsonResponse
     {
         $user = $this->userRepository->findByEmail($data['email']);
@@ -62,7 +57,7 @@ class UserService implements UserServiceContract
         }
 
         $user->password = Hash::make($newPassword);
-        $user->save();
+        $this->userRepository->save($user);
 
         return response()->json(['message' => 'Password successfully updated', 'user' => new UserResource($user)]);
     }

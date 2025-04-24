@@ -13,18 +13,49 @@ use App\Models\User;
 use App\Services\UserServices\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
     protected UserService $userService;
     protected OtpServiceContract $otpService;
+    protected $userRepository;
 
-    public function __construct(UserService $userService, OtpServiceContract $otpService)
+
+
+    public function __construct(UserService $userService, OtpServiceContract $otpService,$userRepository)
     {
         $this->userService = $userService;
         $this->otpService = $otpService;
+        $this->userRepository = $userRepository;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/signup",
+     *     tags={"Auth"},
+     *     summary="User Registration",
+     *     description="Register a new user and send OTP to email",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123"),
+     *             @OA\Property(property="password_confirmation", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Successful registration",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Registration successful. Please verify your email using the OTP sent to your address."),
+     *             @OA\Property(property="user_id", type="integer", example=1)
+     *         )
+     *     )
+     * )
+     */
     public function signUp(UserCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -37,16 +68,70 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/signin",
+     *     tags={"Auth"},
+     *     summary="User Login",
+     *     description="Authenticate user and return token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful login",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully logged in"),
+     *             @OA\Property(property="token", type="string", example="Bearer eyJ0eXAiOiJKV1QiLCJhbGci..."),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Invalid credentials")
+     * )
+     */
     public function signIn(UserLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
         return $this->userService->signIn($data);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/reset-password",
+     *     tags={"Auth"},
+     *     summary="Reset Password",
+     *     description="Reset user password using reset token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","reset_token","new_password"},
+     *             @OA\Property(property="email", type="string", example="john@example.com"),
+     *             @OA\Property(property="reset_token", type="string", example="a1b2c3d4e5f6"),
+     *             @OA\Property(property="new_password", type="string", example="newpassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password successfully updated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Password successfully updated"),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="User not found"),
+     *     @OA\Response(response=400, description="Invalid or expired reset token")
+     * )
+     */
     public function resetPassword(PasswordResetRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $user = User::where('email', $data['email'])->first();
+
+        $user = $this->userRepository->findByEmail($data['email']);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
@@ -60,21 +145,90 @@ class AuthController extends Controller
 
         $response = $this->userService->resetPassword($data['email'], $data['new_password']);
         $this->userService->clearResetToken($user);
+
         return $response;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     tags={"Auth"},
+     *     summary="Logout",
+     *     description="Logout authenticated user",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully logged out",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Successfully logged out")
+     *         )
+     *     )
+     * )
+     */
     public function logout(): JsonResponse
     {
-        Auth::user()->currentAccessToken()->delete();
+        $user = Auth::user();
+        if ($user && $user->currentAccessToken()) {
+            $user->currentAccessToken()->delete();
+        }
         return response()->json(['message' => 'Successfully logged out']);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/send-otp",
+     *     tags={"Auth"},
+     *     summary="Send OTP",
+     *     description="Send OTP to user's email",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", example="john@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OTP sent",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="OTP sent to your email")
+     *         )
+     *     )
+     * )
+     */
     public function sendOtp(SendOtpRequest $request): JsonResponse
     {
         $user = User::where('email', $request->email)->firstOrFail();
         $this->otpService->generateAndSend($user);
         return response()->json(['message' => 'OTP sent to your email']);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/verify-otp",
+     *     tags={"Auth"},
+     *     summary="Verify OTP for Password Reset",
+     *     description="Verify OTP and get reset token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user_id","otp"},
+     *             @OA\Property(property="user_id", type="integer", example=1),
+     *             @OA\Property(property="otp", type="string", example="123456")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OTP verified",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="OTP verified successfully. You can now reset your password."),
+     *             @OA\Property(property="reset_token", type="string", example="a1b2c3d4e5f6"),
+     *             @OA\Property(property="user_id", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Invalid OTP")
+     * )
+     */
 
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
@@ -90,6 +244,33 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid OTP'], 422);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/verify-registration-otp",
+     *     tags={"Auth"},
+     *     summary="Verify Registration OTP",
+     *     description="Verify OTP for email confirmation and login",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user_id","otp"},
+     *             @OA\Property(property="user_id", type="integer", example=1),
+     *             @OA\Property(property="otp", type="string", example="123456")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Email verified and logged in",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Email verified successfully. You are now logged in."),
+     *             @OA\Property(property="token", type="string", example="Bearer eyJ0eXAiOiJKV..."),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Invalid OTP")
+     * )
+     */
 
     public function verifyRegistrationOtp(VerifyOtpRequest $request): JsonResponse
     {
