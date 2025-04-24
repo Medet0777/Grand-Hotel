@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\DTO\User\CreateUserDTO;
 use App\Http\DTO\User\SignInDTO;
 use App\Http\DTO\User\ResetPasswordDTO;
-
+use App\Exceptions\UserNotFoundException;
+use App\Exceptions\InvalidResetTokenException;
+use App\Exceptions\InvalidOtpException;
 
 class AuthController extends Controller
 {
@@ -124,11 +126,11 @@ class AuthController extends Controller
 
         $user = Repository::user()->findByEmail($dto->email);
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+           throw new UserNotFoundException();
         }
 
         if (!Service::user()->validateResetToken($user, $dto->resetToken)) {
-            return response()->json(['message' => 'Invalid or expired reset token'], 400);
+            throw new InvalidResetTokenException();
         }
 
         $response = Service::user()->resetPassword($dto);
@@ -189,7 +191,7 @@ class AuthController extends Controller
         $user = Repository::user()->findByEmail($request->email);
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            throw new UserNotFoundException();
         }
 
         Service::otp()->generateAndSend($user);
@@ -227,15 +229,21 @@ class AuthController extends Controller
     {
         $user = Repository::user()->findById($request->user_id);
 
-        if ($resetToken = Service::user()->verifyOtpForPasswordReset($user, $request->otp)) {
-            return response()->json([
-                'message' => 'OTP verified successfully. You can now reset your password.',
-                'reset_token' => $resetToken,
-                'user_id' => $user->id,
-            ]);
-        } else {
-            return response()->json(['message' => 'Invalid OTP'], 422);
+        if (!$user) {
+            throw new UserNotFoundException();
         }
+
+        $resetToken = Service::user()->verifyOtpForPasswordReset($user, $request->otp);
+
+        if (!$resetToken) {
+            throw new InvalidOtpException();
+        }
+
+        return response()->json([
+            'message' => 'OTP verified successfully. You can now reset your password.',
+            'reset_token' => $resetToken,
+            'user_id' => $user->id,
+        ]);
     }
 
     /**
@@ -268,6 +276,8 @@ class AuthController extends Controller
     public function verifyRegistrationOtp(VerifyOtpRequest $request): JsonResponse
     {
         $user = Repository::user()->findById($request->user_id);
+
+
 
         return Service::user()->verifyRegistrationOtp($user, $request->otp);
     }

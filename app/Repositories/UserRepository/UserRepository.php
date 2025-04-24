@@ -3,6 +3,7 @@
 namespace App\Repositories\UserRepository;
 
 use App\Contracts\UserContracts\UserRepositoryContract;
+use App\Http\DTO\User\CreateUserDTO;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -23,16 +24,23 @@ class UserRepository implements UserRepositoryContract
         return User::findOrFail($id);
     }
 
-    public function create(array $data): User
+    public function create(CreateUserDTO $dto): User
     {
-        return User::create($data);
+        return User::create([
+            'name' => $dto->name,
+            'email' => $dto->email,
+            'password' => bcrypt($dto->password),
+        ]);
     }
 
-    public function update(int $id, array $data): bool
+    public function update(int $id, CreateUserDTO $dto): bool
     {
         $user = User::findOrFail($id);
-        return $user->update($data);
-
+        return $user->update([
+            'name' => $dto->name,
+            'email' => $dto->email,
+            'password' => $dto->password ? bcrypt($dto->password) : $user->password,
+        ]);
     }
 
     public function delete(int $id): bool
