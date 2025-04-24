@@ -17,9 +17,49 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Биндинги контрактов
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);
         $this->app->bind(UserServiceContract::class, UserService::class);
         $this->app->bind(OtpServiceContract::class, OtpService::class);
+
+        // Фасад Service
+        $this->app->singleton('service', function ($app) {
+            return new class($app) {
+                protected $app;
+
+                public function __construct($app)
+                {
+                    $this->app = $app;
+                }
+
+                public function user()
+                {
+                    return $this->app->make(UserServiceContract::class);
+                }
+
+                public function otp()
+                {
+                    return $this->app->make(OtpServiceContract::class);
+                }
+            };
+        });
+
+        // Фасад Repository
+        $this->app->singleton('repository', function ($app) {
+            return new class($app) {
+                protected $app;
+
+                public function __construct($app)
+                {
+                    $this->app = $app;
+                }
+
+                public function user()
+                {
+                    return $this->app->make(UserRepositoryContract::class);
+                }
+            };
+        });
     }
 
     /**
