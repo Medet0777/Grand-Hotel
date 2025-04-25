@@ -2,10 +2,12 @@
 namespace App\Facades;
 
 use App\Contracts\UserContracts\UserRepositoryContract;
+use App\Contracts\WishlistContracts\WishlistRepositoryContract;
 use Illuminate\Support\Facades\Facade;
 
 /**
  * @method UserRepositoryContract user()
+ * @method WishlistRepositoryContract wishlist()
  */
 
 class Repository extends Facade
