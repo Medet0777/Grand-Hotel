@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('hotel__images', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('hotel_id')->constrained('hotels')->cascadeOnDelete();
+            $table->string('url');
             $table->timestamps();
         });
     }
