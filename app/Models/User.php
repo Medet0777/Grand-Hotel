@@ -28,6 +28,35 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
     ];
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+
+    public function userRatings()
+    {
+        return $this->hasMany(UserRating::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
