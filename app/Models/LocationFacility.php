@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class User_Rating extends Model
+class LocationFacility extends Model
 {
     //
 }
