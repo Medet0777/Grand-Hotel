@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,14 @@ Route::post('/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/register/verify-otp', [AuthController::class, 'verifyRegistrationOtp']);
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/wishlist/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+
+
+    Route::delete('/wishlist/remove/{hotelId}', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+
+
+    Route::get('/wishlist', [WishlistController::class, 'getWishlist'])->name('wishlist.list');
+});
