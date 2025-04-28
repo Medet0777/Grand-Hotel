@@ -19,6 +19,7 @@ Route::post('/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/register/verify-otp', [AuthController::class, 'verifyRegistrationOtp']);
+Route::put('/profile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
 

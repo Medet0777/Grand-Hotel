@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Facades\Service;
 use App\Facades\Repository;
 use App\Http\Controllers\Controller;
+use App\Http\DTO\User\UpdateUserDTO;
 use App\Http\Requests\PasswordResetRequest;
 use App\Http\Requests\SendOtpRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\VerifyOtpRequest;
@@ -246,6 +248,68 @@ class AuthController extends Controller
             'reset_token' => $resetToken,
             'user_id' => $user->id,
         ]);
+    }
+
+    /**
+     * @OA\Put(
+     *     path="/api/profile",
+     *     summary="Update user profile",
+     *     description="Allows the authenticated user to update their name, nickname, and phone number. Email cannot be changed.",
+     *     operationId="updateUserProfile",
+     *     tags={"User"},
+     *     security={{"sanctum": {}}},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "nickname", "phone_number"},
+     *             @OA\Property(property="name", type="string", example="Gustavo"),
+     *             @OA\Property(property="nickname", type="string", example="gus123"),
+     *             @OA\Property(property="phone_number", type="string", example="+19003430")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Profile updated successfully")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 example={"phone_number": {"The phone number has already been taken."}}
+     *             )
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+
+    public function update(UpdateUserRequest $request)
+    {
+        $dto = new UpdateUserDTO(
+            name: $request->name,
+            nickname: $request->nickname,
+            phone_number: $request->phone_number
+        );
+
+        $userId = auth()->id();
+
+        Service::user()->updateUser($userId, $dto);
+
+        return response()->json(['message' => 'Profile updated successfully']);
     }
 
     /**
