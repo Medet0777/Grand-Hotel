@@ -297,7 +297,7 @@ class AuthController extends Controller
      * )
      */
 
-    public function update(UpdateUserRequest $request)
+    public function updateProfile(UpdateUserRequest $request)
     {
         $dto = new UpdateUserDTO(
             name: $request->name,
