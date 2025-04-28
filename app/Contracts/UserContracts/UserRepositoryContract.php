@@ -2,6 +2,7 @@
 
 namespace App\Contracts\UserContracts;
 use App\Http\DTO\User\CreateUserDTO;
+use App\Http\DTO\User\UpdateUserDTO;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\User;
 
@@ -14,7 +15,7 @@ interface UserRepositoryContract
 
     public function create(CreateUserDTO $dto): User;
 
-    public function update(int $id, CreateUserDTO $dto): bool;
+    public function update(int $id, UpdateUserDTO $dto): bool;
 
     public function delete(int $id): bool;
 }

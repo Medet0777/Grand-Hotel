@@ -6,6 +6,7 @@ use App\Exceptions\InvalidCredentialsException;
 use App\Facades\Repository;
 use App\Facades\Service;
 use App\Contracts\UserContracts\UserServiceContract;
+use App\Http\DTO\User\UpdateUserDTO;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -93,5 +94,10 @@ class UserService implements UserServiceContract
             ]);
         }
         return response()->json(['message' => 'Invalid OTP'], 422);
+    }
+
+    public function updateUser(int $id, UpdateUserDTO $dto): bool
+    {
+        return Repository::user()->update($id, $dto);
     }
 }
