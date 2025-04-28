@@ -26,6 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'nickname',
+        'phone_number',
     ];
 
     public function bookings()
