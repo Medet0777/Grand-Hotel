@@ -49,6 +49,14 @@
                                     "password_confirmation": {
                                         "type": "string",
                                         "example": "password123"
+                                    },
+                                    "nickname": {
+                                        "type": "string",
+                                        "example": "johnny"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "+77001234567"
                                     }
                                 },
                                 "type": "object"

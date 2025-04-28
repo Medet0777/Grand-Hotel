@@ -23,8 +23,10 @@ class UserCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'nickname' => 'required|string|max:50',
+            'phone_number' => 'required|string|unique:users,phone_number|regex:/^\+?[0-9]{10,15}$/',
         ];
     }
     public function messages()

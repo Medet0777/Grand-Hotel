@@ -30,6 +30,8 @@ class UserRepository implements UserRepositoryContract
             'name' => $dto->name,
             'email' => $dto->email,
             'password' => bcrypt($dto->password),
+            'nickname' => $dto->nickname,
+            'phone_number' => $dto->phone_number,
         ]);
     }
 
