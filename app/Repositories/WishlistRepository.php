@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\WishlistRepository;
+namespace App\Repositories;
 
 use App\Contracts\WishlistContracts\WishlistRepositoryContract;
 use App\Models\Wishlist;

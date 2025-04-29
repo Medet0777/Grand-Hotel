@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\UserRepository;
+namespace App\Repositories;
 
 use App\Contracts\UserContracts\UserRepositoryContract;
 use App\Http\DTO\User\CreateUserDTO;
