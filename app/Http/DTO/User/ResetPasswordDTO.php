@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\DTO\User;
 
-use App\Http\Requests\PasswordResetRequest;
+use App\Http\Requests\User\PasswordResetRequest;
 
 class ResetPasswordDTO
 {

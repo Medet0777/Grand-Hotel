@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Facades\Service;
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidResetTokenException;
+use App\Exceptions\UserNotFoundException;
 use App\Facades\Repository;
+use App\Facades\Service;
 use App\Http\Controllers\Controller;
+use App\Http\DTO\User\CreateUserDTO;
+use App\Http\DTO\User\ResetPasswordDTO;
+use App\Http\DTO\User\SignInDTO;
 use App\Http\DTO\User\UpdateUserDTO;
-use App\Http\Requests\PasswordResetRequest;
-use App\Http\Requests\SendOtpRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserLoginRequest;
-use App\Http\Requests\VerifyOtpRequest;
+use App\Http\Requests\User\PasswordResetRequest;
+use App\Http\Requests\User\SendOtpRequest;
+use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\UserCreateRequest;
+use App\Http\Requests\User\UserLoginRequest;
+use App\Http\Requests\User\VerifyOtpRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Http\DTO\User\CreateUserDTO;
-use App\Http\DTO\User\SignInDTO;
-use App\Http\DTO\User\ResetPasswordDTO;
-use App\Exceptions\UserNotFoundException;
-use App\Exceptions\InvalidResetTokenException;
-use App\Exceptions\InvalidOtpException;
 
 class AuthController extends Controller
 {

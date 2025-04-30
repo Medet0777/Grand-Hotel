@@ -2,7 +2,7 @@
 
 namespace App\Http\DTO\User;
 
-use App\Http\Requests\UserCreateRequest;
+use App\Http\Requests\User\UserCreateRequest;
 
 class CreateUserDTO
 {

@@ -4,7 +4,7 @@ namespace App\Http\DTO\User;
 
 
 
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 
 class UpdateUserDTO
 {

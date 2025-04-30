@@ -2,7 +2,7 @@
 
 namespace App\Http\DTO\User;
 
-use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\User\UserLoginRequest;
 
 class SignInDTO
 {
