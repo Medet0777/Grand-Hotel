@@ -12,11 +12,19 @@ class OtpService implements OtpServiceContract
 {
     protected int $expirationTime = 600;
 
-    public function generateAndSend(User $user, ?string $registrationToken = null): void
+    public function generateAndSend(User|array $user, string $token): void
     {
         $otp = rand(1000, 9999);
-        $this->storeOtp($user, $otp, $registrationToken);
-        $this->sendOtpEmail($user, $otp);
+        $this->storeOtp($user, $otp, $token);
+        // Ensure $user is always a User object before passing to sendOtpEmail
+        if (is_array($user)) {
+            // If $user is an array, create a User object with the email.
+            $fakeUser = new User();
+            $fakeUser->email = $user['email'];
+            $this->sendOtpEmail($fakeUser, $otp);
+        } else {
+            $this->sendOtpEmail($user, $otp);
+        }
     }
 
     public function verify(User $user, string $otp): bool
@@ -35,12 +43,13 @@ class OtpService implements OtpServiceContract
         Cache::forget("reg_token_for_email_" . $user->email); // Очищаем и токен
     }
 
-    protected function storeOtp(User $user, string $otp, ?string $registrationToken = null): void
+    protected function storeOtp(User|array $user, string $otp, string $registrationToken = null): void
     {
-        $cacheKey = $this->getCacheKey($user->email, $registrationToken);
+        $email = is_array($user) ? $user['email'] : $user->email;
+        $cacheKey = $this->getCacheKey($email, $registrationToken);
         Cache::put($cacheKey, $otp, $this->expirationTime);
         if ($registrationToken) {
-            Cache::put("reg_token_for_email_" . $user->email, $registrationToken, $this->expirationTime);
+            Cache::put("reg_token_for_email_" . $email, $registrationToken, $this->expirationTime);
         }
     }
 
@@ -56,3 +65,4 @@ class OtpService implements OtpServiceContract
         return $registrationToken ? $baseKey . "_reg_" . $registrationToken : $baseKey;
     }
 }
+
