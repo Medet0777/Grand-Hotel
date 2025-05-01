@@ -20,8 +20,8 @@ class HotelResource extends JsonResource
             'rating' => $this->rating,
             'price_per_night' => (float) $this->price_per_night,
             'description' => $this->description,
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->toDateTimeString() : null,
 
         ];
     }
