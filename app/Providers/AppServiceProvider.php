@@ -15,6 +15,7 @@ use App\Repositories\RoomRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WishlistRepository;
 use App\Services\RoomServices\RoomService;
+use App\Services\UserServices\AuthService;
 use App\Services\UserServices\OtpService;
 use App\Services\UserServices\UserService;
 use App\Services\WishlistServices\WishlistService;
@@ -38,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(HotelServiceContract::class, HotelService::class);
         $this->app->bind(RoomRepositoryContract::class, RoomRepository::class);
         $this->app->bind(RoomServiceContract::class, RoomService::class);
+        $this->app->bind(AuthService::class, AuthService::class);
 
         // Фасад Service
         $this->app->singleton('service', function ($app) {
@@ -52,6 +54,11 @@ class AppServiceProvider extends ServiceProvider
                 public function user()
                 {
                     return $this->app->make(UserServiceContract::class);
+                }
+
+                public function auth()
+                {
+                    return $this->app->make(AuthService::class);
                 }
 
                 public function otp()

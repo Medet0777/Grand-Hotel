@@ -20,6 +20,7 @@ use App\Http\Requests\User\UserLoginRequest;
 use App\Http\Requests\User\VerifyOtpRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\User\VerifyRegistrationRequest;
 
 class AuthController extends Controller
 {
@@ -56,13 +57,12 @@ class AuthController extends Controller
     public function signUp(UserCreateRequest $request): JsonResponse
     {
         $dto = CreateUserDTO::fromRequest($request);
-        $user = Service::user()->createUser($dto);
-        Service::otp()->generateAndSend($user);
+        $registrationToken = Service::auth()->initiateRegistration($dto);
 
         return response()->json([
-            'message' => 'Registration successful. Please verify your email using the OTP sent to your address.',
-            'user_id' => $user->id,
-        ], 201);
+            'message' => 'OTP sent to your email for verification.',
+            'registration_token' => $registrationToken,
+        ], 200);
     }
 
     /**
@@ -339,12 +339,9 @@ class AuthController extends Controller
      * )
      */
 
-    public function verifyRegistrationOtp(VerifyOtpRequest $request): JsonResponse
+    public function verifyRegistrationOtp(VerifyRegistrationRequest $request): JsonResponse
     {
-        $user = Repository::user()->findById($request->user_id);
-
-
-
-        return Service::user()->verifyRegistrationOtp($user, $request->otp);
+        return Service::auth()->verifyRegistration($request);
     }
+
 }

@@ -8,34 +8,40 @@ use App\Notifications\OtpNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-
 class OtpService implements OtpServiceContract
 {
     protected int $expirationTime = 600;
-    public function generateAndSend(User $user): void
+
+    public function generateAndSend(User $user, ?string $registrationToken = null): void
     {
         $otp = rand(1000, 9999);
-        $this->storeOtp($user, $otp);
+        $this->storeOtp($user, $otp, $registrationToken);
         $this->sendOtpEmail($user, $otp);
     }
 
     public function verify(User $user, string $otp): bool
     {
-        $cachedOtp = Cache::get($this->getCacheKey($user));
-
-        $cachedOtp = Cache::get($this->getCacheKey($user));
-
+        $registrationToken = Cache::get("reg_token_for_email_" . $user->email);
+        $cacheKey = $this->getCacheKey($user->email, $registrationToken);
+        $cachedOtp = Cache::get($cacheKey);
         return $cachedOtp === $otp;
     }
 
     public function clear(User $user): void
     {
-        Cache::forget($this->getCacheKey($user));
+        $registrationToken = Cache::get("reg_token_for_email_" . $user->email);
+        $cacheKey = $this->getCacheKey($user->email, $registrationToken);
+        Cache::forget($cacheKey);
+        Cache::forget("reg_token_for_email_" . $user->email); // Очищаем и токен
     }
 
-    protected function storeOtp(User $user, string $otp): void
+    protected function storeOtp(User $user, string $otp, ?string $registrationToken = null): void
     {
-        Cache::put($this->getCacheKey($user), $otp, $this->expirationTime);
+        $cacheKey = $this->getCacheKey($user->email, $registrationToken);
+        Cache::put($cacheKey, $otp, $this->expirationTime);
+        if ($registrationToken) {
+            Cache::put("reg_token_for_email_" . $user->email, $registrationToken, $this->expirationTime);
+        }
     }
 
     protected function sendOtpEmail(User $user, string $otp): void
@@ -44,9 +50,9 @@ class OtpService implements OtpServiceContract
         $user->notify(new OtpNotification($otp));
     }
 
-    protected function getCacheKey(User $user): string
+    protected function getCacheKey(string $email, ?string $registrationToken = null): string
     {
-        return "otp_for_user_$user->id";
+        $baseKey = "otp_for_email_$email";
+        return $registrationToken ? $baseKey . "_reg_" . $registrationToken : $baseKey;
     }
 }
-
