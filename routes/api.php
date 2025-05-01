@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::apiResource('hotels', HotelController::class);
+//Route::apiResource('hotels', HotelController::class);
 Route::post('/hotels/check',[HotelController::class, 'store']);
 Route::get('/hotels/popular', [HotelController::class, 'popular'])->name('hotels.popular');
 Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
