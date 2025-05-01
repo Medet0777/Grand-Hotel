@@ -980,12 +980,361 @@
                     }
                 }
             }
+        },
+        "/api/rooms": {
+            "get": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Получить список комнат",
+                "description": "Возвращает пагинированный список всех комнат.",
+                "operationId": "db2a0f9c242ba089e87d5ae1fa8e14c5",
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "hotel_id": {
+                                                "type": "integer",
+                                                "example": 3
+                                            },
+                                            "room_type": {
+                                                "type": "string",
+                                                "example": "Deluxe"
+                                            },
+                                            "price_per_night": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 120.5
+                                            },
+                                            "available": {
+                                                "type": "boolean",
+                                                "example": true
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-04-30T05:52:00.000000Z"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-04-30T05:52:00.000000Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Создать новую комнату",
+                "description": "Создает новую комнату на основе переданных данных.",
+                "operationId": "809158a6b73bac8545f93f5b9f8a8a8a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "hotel_id",
+                                    "room_type",
+                                    "price_per_night"
+                                ],
+                                "properties": {
+                                    "hotel_id": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "room_type": {
+                                        "type": "string",
+                                        "example": "Standard"
+                                    },
+                                    "price_per_night": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100
+                                    },
+                                    "available": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Комната успешно создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "hotel_id": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "room_type": {
+                                            "type": "string",
+                                            "example": "Standard"
+                                        },
+                                        "price_per_night": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 100
+                                        },
+                                        "available": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-30T05:52:00.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-30T05:52:00.000000Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                }
+            }
+        },
+        "/api/rooms/{id}": {
+            "get": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Получить информацию о комнате по ID",
+                "description": "Возвращает информацию о комнате с указанным ID.",
+                "operationId": "b1475eb28ef61d930c8d73dce18cd23c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID комнаты",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "hotel_id": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "room_type": {
+                                            "type": "string",
+                                            "example": "Deluxe"
+                                        },
+                                        "price_per_night": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 120.5
+                                        },
+                                        "available": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-30T05:52:00.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-30T05:52:00.000000Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комната не найдена"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Обновить информацию о комнате",
+                "description": "Обновляет информацию о комнате с указанным ID.",
+                "operationId": "0c313fa83b1cc3ffd17495d103f021e2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID комнаты",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "room_type": {
+                                        "type": "string",
+                                        "example": "Suite"
+                                    },
+                                    "price_per_night": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150
+                                    },
+                                    "available": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Комната успешно обновлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "hotel_id": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "room_type": {
+                                            "type": "string",
+                                            "example": "Suite"
+                                        },
+                                        "price_per_night": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 150
+                                        },
+                                        "available": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-30T05:52:00.000000Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-04-30T05:52:00.000000Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Комната не найдена"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Удалить комнату",
+                "description": "Удаляет комнату с указанным ID.",
+                "operationId": "4698523ee5dafa1ac652ef8ede5e96d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID комнаты",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Комната успешно удалена"
+                    },
+                    "404": {
+                        "description": "Комната не найдена"
+                    }
+                }
+            }
         }
     },
     "tags": [
         {
             "name": "Hotels",
             "description": "Операции, связанные с отелями"
+        },
+        {
+            "name": "Rooms",
+            "description": "Операции, связанные с комнатами"
         },
         {
             "name": "Auth",

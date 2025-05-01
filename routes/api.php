@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,3 +31,6 @@ Route::apiResource('hotels', HotelController::class);
 Route::get('/hotels/popular', [HotelController::class, 'popular'])->name('hotels.popular');
 Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
 
+
+Route::apiResource('rooms', RoomController::class);
+Route::get('/hotels/{hotel_id}/rooms', [RoomController::class, 'getRoomsByHotel']);
