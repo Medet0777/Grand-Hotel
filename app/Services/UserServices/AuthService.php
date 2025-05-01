@@ -6,15 +6,14 @@ use App\Facades\Service;
 use App\Http\DTO\User\CreateUserDTO;
 use App\Http\Requests\User\VerifyRegistrationRequest;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    public function initiateRegistration(CreateUserDTO $dto): string
+    public function initiateRegistration(CreateUserDTO $dto, string $registrationToken): string
     {
-        $registrationToken = Str::uuid();
         $userData = [
             'name' => $dto->name,
             'email' => $dto->email,
