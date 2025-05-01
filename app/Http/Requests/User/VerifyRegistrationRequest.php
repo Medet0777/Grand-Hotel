@@ -22,7 +22,7 @@ class VerifyRegistrationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'otp' => 'required|string|length:4',
+            'otp' => 'required|string|min:4|max:4',
             'registration_token' => 'required|string',
             'email' => 'required|email',
         ];
