@@ -23,4 +23,7 @@ interface UserServiceContract
     public function verifyRegistrationOtp(User $user, string $otp): JsonResponse;
 
     public function clearResetToken(User $user): void;
+
+    public function isNicknameTaken(string $nickname): bool;
+    public function isPhoneNumberTaken(string $phoneNumber): bool;
 }
