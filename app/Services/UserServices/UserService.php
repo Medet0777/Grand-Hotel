@@ -100,4 +100,13 @@ class UserService implements UserServiceContract
     {
         return Repository::user()->update($id, $dto);
     }
+    public function isNicknameTaken(string $nickname): bool
+    {
+        return User::where('nickname', $nickname)->exists();
+    }
+
+    public function isPhoneNumberTaken(string $phoneNumber): bool
+    {
+        return User::where('phone_number', $phoneNumber)->exists();
+    }
 }
