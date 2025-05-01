@@ -1325,6 +1325,80 @@
                     }
                 }
             }
+        },
+        "/api/hotels/{hotelId}/rooms": {
+            "get": {
+                "tags": [
+                    "Rooms"
+                ],
+                "summary": "Получить комнаты по ID отеля",
+                "description": "Возвращает список комнат для конкретного отеля по его ID.",
+                "operationId": "0cc3c728ada15d4008928cb921b6a194",
+                "parameters": [
+                    {
+                        "name": "hotelId",
+                        "in": "path",
+                        "description": "ID отеля",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "hotel_id": {
+                                                "type": "integer",
+                                                "example": 3
+                                            },
+                                            "room_type": {
+                                                "type": "string",
+                                                "example": "Deluxe"
+                                            },
+                                            "price_per_night": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 120.5
+                                            },
+                                            "available": {
+                                                "type": "boolean",
+                                                "example": true
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-04-30T05:52:00.000000Z"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-04-30T05:52:00.000000Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Отель не найден"
+                    }
+                }
+            }
         }
     },
     "tags": [
