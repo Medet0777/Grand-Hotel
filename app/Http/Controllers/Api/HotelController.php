@@ -93,8 +93,9 @@ class HotelController extends Controller
     public function store(CreateHotelRequest $request): JsonResponse
     {
         $dto = $request->toDTO();
-        $hotel = Service::hotel()->createNewHotel($dto);
-        return (new HotelResource($hotel))->response()->setStatusCode(Response::HTTP_CREATED);
+        dd($dto);
+//        $hotel = Service::hotel()->createNewHotel($dto);
+//        return (new HotelResource($hotel))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
