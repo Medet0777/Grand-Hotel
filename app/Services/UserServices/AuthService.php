@@ -51,8 +51,8 @@ class AuthService
             name: $userData['name'],
             email: $userData['email'],
             password: $userData['password'],
+            phone_number: $userData['phone_number'] ?? null,
             nickname: $userData['nickname'] ?? null,
-            phone_number: $userData['phone_number'] ?? null
         );
 
         $newUser = Service::user()->createUser($createUserDTO);

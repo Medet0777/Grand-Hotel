@@ -58,9 +58,7 @@ class AuthController extends Controller
     public function signUp(UserCreateRequest $request): JsonResponse
     {
         $dto = CreateUserDTO::fromRequest($request);
-        $registrationToken = Str::uuid();
-
-        Service::otp()->generateAndSend(['email' => $dto->email], $registrationToken);
+        $registrationToken = Service::auth()->initiateRegistration($dto, Str::uuid());
 
         return response()->json([
             'message' => 'OTP sent to your email for verification.',
