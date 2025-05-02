@@ -14,6 +14,7 @@ class AuthService
 {
     public function initiateRegistration(CreateUserDTO $dto, string $registrationToken): string
     {
+
         $userData = [
             'name' => $dto->name,
             'email' => $dto->email,
@@ -21,6 +22,14 @@ class AuthService
             'nickname' => $dto->nickname,
             'phone_number' => $dto->phone_number,
         ];
+
+        if (Service::user()->isNicknameTaken($userData['nickname'])) {
+            throw ValidationException::withMessages(['nickname' => ['Никнейм уже занят.']]);
+        }
+        if (Service::user()->isPhoneNumberTaken($userData['phone_number'])) {
+            throw ValidationException::withMessages(['phone_number' => ['Номер телефона уже используется.']]);
+        }
+
         Cache::put('registration:' . $registrationToken, $userData, now()->addMinutes(60));
         $user = ['email' => $dto->email];
         Service::otp()->generateAndSend($user, $registrationToken);
@@ -31,21 +40,16 @@ class AuthService
     {
         $otp = $request->otp;
         $registrationToken = $request->registration_token;
-        $email = $request->email;
+
 
         $userData = Cache::get('registration:' . $registrationToken);
 
-        if (!$userData || $userData['email'] !== $email) {
+        if (!$userData) {
             return response()->json(['message' => 'Недействительный токен регистрации или email.'], 422);
         }
 
-        // Проверяем уникальность nickname и phone_number
-        if (Service::user()->isNicknameTaken($userData['nickname'])) {
-            throw ValidationException::withMessages(['nickname' => ['Никнейм уже занят.']]);
-        }
-        if (Service::user()->isPhoneNumberTaken($userData['phone_number'])) {
-            throw ValidationException::withMessages(['phone_number' => ['Номер телефона уже используется.']]);
-        }
+
+
 
         $createUserDTO = new CreateUserDTO(
             name: $userData['name'],

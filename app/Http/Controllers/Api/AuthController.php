@@ -32,11 +32,11 @@ class AuthController extends Controller
      *     path="/api/signup",
      *     tags={"Auth"},
      *     summary="User Registration",
-     *     description="Register a new user and send OTP to email",
+     *     description="Registers a new user temporarily and sends an OTP for verification. Returns registration_token for further verification.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name","email","password"},
+     *             required={"name","email","password","password_confirmation","nickname","phone_number"},
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john@example.com"),
      *             @OA\Property(property="password", type="string", example="password123"),
@@ -46,11 +46,11 @@ class AuthController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="Successful registration",
+     *         response=200,
+     *         description="OTP sent successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Registration successful. Please verify your email using the OTP sent to your address."),
-     *             @OA\Property(property="user_id", type="integer", example=1)
+     *             @OA\Property(property="message", type="string", example="OTP sent to your email for verification."),
+     *             @OA\Property(property="registration_token", type="string", example="7e4c4caf-e492-40d4-af65-c4ab9619cae5")
      *         )
      *     )
      * )
@@ -318,25 +318,31 @@ class AuthController extends Controller
      *     path="/api/verify-registration-otp",
      *     tags={"Auth"},
      *     summary="Verify Registration OTP",
-     *     description="Verify OTP for email confirmation and login",
+     *     description="Verify OTP using registration_token. If successful, creates a user and returns an auth token.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"user_id","otp"},
-     *             @OA\Property(property="user_id", type="integer", example=1),
-     *             @OA\Property(property="otp", type="string", example="123456")
+     *             required={"registration_token", "otp"},
+     *             @OA\Property(property="registration_token", type="string", example="7e4c4caf-e492-40d4-af65-c4ab9619cae5"),
+     *             @OA\Property(property="otp", type="string", example="1234")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="Email verified and logged in",
+     *         response=201,
+     *         description="User created and logged in",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Email verified successfully. You are now logged in."),
+     *             @OA\Property(property="message", type="string", example="Email успешно подтвержден. Ваша учетная запись была создана."),
      *             @OA\Property(property="token", type="string", example="Bearer eyJ0eXAiOiJKV..."),
      *             @OA\Property(property="user", type="object")
      *         )
      *     ),
-     *     @OA\Response(response=422, description="Invalid OTP")
+     *     @OA\Response(
+     *         response=422,
+     *         description="Invalid or expired registration token or OTP",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Недействительный токен регистрации.")
+     *         )
+     *     )
      * )
      */
 

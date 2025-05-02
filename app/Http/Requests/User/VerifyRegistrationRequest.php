@@ -24,7 +24,6 @@ class VerifyRegistrationRequest extends FormRequest
         return [
             'otp' => 'required|string|min:4|max:4',
             'registration_token' => 'required|string',
-            'email' => 'required|email',
         ];
     }
 }
