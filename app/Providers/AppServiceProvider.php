@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\BookingContracts\BookingRepositoryContract;
+use App\Contracts\BookingContracts\BookingServiceContract;
 use App\Contracts\HotelContracts\HotelRepositoryContract;
 use App\Contracts\RoomContracts\RoomRepositoryContract;
 use App\Contracts\RoomContracts\RoomServiceContract;
@@ -10,10 +12,12 @@ use App\Contracts\UserContracts\UserRepositoryContract;
 use App\Contracts\UserContracts\UserServiceContract;
 use App\Contracts\WishlistContracts\WishlistRepositoryContract;
 use App\Contracts\WishlistContracts\WishlistServiceContract;
+use App\Repositories\BookingRepository;
 use App\Repositories\HotelRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WishlistRepository;
+use App\Services\BookingServices\BookingService;
 use App\Services\RoomServices\RoomService;
 use App\Services\UserServices\AuthService;
 use App\Services\UserServices\OtpService;
@@ -40,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RoomRepositoryContract::class, RoomRepository::class);
         $this->app->bind(RoomServiceContract::class, RoomService::class);
         $this->app->bind(AuthService::class, AuthService::class);
+        $this->app->bind(BookingRepositoryContract::class, BookingRepository::class);
+        $this->app->bind(BookingServiceContract::class, BookingService::class);
 
         // Фасад Service
         $this->app->singleton('service', function ($app) {
@@ -79,6 +85,11 @@ class AppServiceProvider extends ServiceProvider
                 {
                     return $this->app->make(RoomServiceContract::class);
                 }
+
+                public function booking()
+                {
+                    return $this->app->make(BookingServiceContract::class);
+                }
             };
         });
 
@@ -110,6 +121,10 @@ class AppServiceProvider extends ServiceProvider
                 public function room()
                 {
                     return $this->app->make(RoomRepositoryContract::class);
+                }
+                public function booking()
+                {
+                    return $this->app->make(BookingRepositoryContract::class);
                 }
             };
         });

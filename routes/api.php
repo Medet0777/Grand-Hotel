@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\WishlistController;
@@ -27,11 +28,26 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::apiResource('hotels', HotelController::class);
-
+Route::get('/hotels', [HotelController::class, 'index']);
+Route::post('/hotels', [HotelController::class, 'store']);
+Route::get('/hotels/{id}', [HotelController::class, 'show']);
+Route::put('/hotels/{id}', [HotelController::class, 'update']);
+Route::delete('/hotels/{id}', [HotelController::class, 'destroy']);
 Route::get('/hotels/popular', [HotelController::class, 'popular'])->name('hotels.popular');
 Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/bookings', [BookingController::class, 'index']);
+    Route::get('/bookings/{id}', [BookingController::class, 'show']);
+    Route::post('/bookings', [BookingController::class, 'store']);
+    Route::put('/bookings/{id}', [BookingController::class, 'update']);
+    Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);
+});
 
-Route::apiResource('rooms', RoomController::class);
-Route::get('/hotels/{hotel_id}/rooms', [RoomController::class, 'getRoomsByHotel']);
+Route::get('/rooms', [RoomController::class, 'index']);
+Route::post('/rooms', [RoomController::class, 'store']);
+Route::get('/rooms/{id}', [RoomController::class, 'show']);
+Route::put('/rooms/{id}', [RoomController::class, 'update']);
+Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
+
+Route::get('/hotels/{hotelId}/rooms', [RoomController::class, 'getRoomsByHotel']);
