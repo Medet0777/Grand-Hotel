@@ -21,7 +21,7 @@
                     "Auth"
                 ],
                 "summary": "User Registration",
-                "description": "Register a new user and send OTP to email",
+                "description": "Registers a new user temporarily and sends an OTP for verification. Returns registration_token for further verification.",
                 "operationId": "7cc1e7451f17d01ca74f4fb939f4c98c",
                 "requestBody": {
                     "required": true,
@@ -31,7 +31,10 @@
                                 "required": [
                                     "name",
                                     "email",
-                                    "password"
+                                    "password",
+                                    "password_confirmation",
+                                    "nickname",
+                                    "phone_number"
                                 ],
                                 "properties": {
                                     "name": {
@@ -65,19 +68,19 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Successful registration",
+                    "200": {
+                        "description": "OTP sent successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Registration successful. Please verify your email using the OTP sent to your address."
+                                            "example": "OTP sent to your email for verification."
                                         },
-                                        "user_id": {
-                                            "type": "integer",
-                                            "example": 1
+                                        "registration_token": {
+                                            "type": "string",
+                                            "example": "7e4c4caf-e492-40d4-af65-c4ab9619cae5"
                                         }
                                     },
                                     "type": "object"
@@ -454,7 +457,7 @@
                     "Auth"
                 ],
                 "summary": "Verify Registration OTP",
-                "description": "Verify OTP for email confirmation and login",
+                "description": "Verify OTP using registration_token. If successful, creates a user and returns an auth token.",
                 "operationId": "ef236b1c794de4a17ed7862502c10dee",
                 "requestBody": {
                     "required": true,
@@ -462,17 +465,17 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "user_id",
+                                    "registration_token",
                                     "otp"
                                 ],
                                 "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 1
+                                    "registration_token": {
+                                        "type": "string",
+                                        "example": "7e4c4caf-e492-40d4-af65-c4ab9619cae5"
                                     },
                                     "otp": {
                                         "type": "string",
-                                        "example": "123456"
+                                        "example": "1234"
                                     }
                                 },
                                 "type": "object"
@@ -481,15 +484,15 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Email verified and logged in",
+                    "201": {
+                        "description": "User created and logged in",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Email verified successfully. You are now logged in."
+                                            "example": "Email успешно подтвержден. Ваша учетная запись была создана."
                                         },
                                         "token": {
                                             "type": "string",
@@ -505,7 +508,20 @@
                         }
                     },
                     "422": {
-                        "description": "Invalid OTP"
+                        "description": "Invalid or expired registration token or OTP",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Недействительный токен регистрации."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
