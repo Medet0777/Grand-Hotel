@@ -103,14 +103,15 @@ class AuthController extends Controller
      *     path="/api/reset-password",
      *     tags={"Auth"},
      *     summary="Reset Password",
-     *     description="Reset user password using reset token",
+     *     description="Resets the user's password using the provided reset_token after OTP verification.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"email","reset_token","new_password"},
+     *             required={"email", "reset_token", "new_password", "new_password_confirmation"},
      *             @OA\Property(property="email", type="string", example="john@example.com"),
-     *             @OA\Property(property="reset_token", type="string", example="a1b2c3d4e5f6"),
-     *             @OA\Property(property="new_password", type="string", example="newpassword123")
+     *             @OA\Property(property="reset_token", type="string", example="a1b2c3d4e5f6g7h8i9"),
+     *             @OA\Property(property="new_password", type="string", example="newpassword123"),
+     *             @OA\Property(property="new_password_confirmation", type="string", example="newpassword123")
      *         )
      *     ),
      *     @OA\Response(
@@ -173,8 +174,8 @@ class AuthController extends Controller
      * @OA\Post(
      *     path="/api/send-otp",
      *     tags={"Auth"},
-     *     summary="Send OTP",
-     *     description="Send OTP to user's email",
+     *     summary="Send OTP for Password Reset",
+     *     description="Sends a 4-digit OTP to the user's email address if the user exists. Returns user_id for further OTP verification.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -186,9 +187,11 @@ class AuthController extends Controller
      *         response=200,
      *         description="OTP sent",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="OTP sent to your email")
+     *             @OA\Property(property="message", type="string", example="OTP sent to your email"),
+     *             @OA\Property(property="user_id", type="integer", example=1)
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(response=404, description="User not found")
      * )
      */
     public function sendOtp(SendOtpRequest $request): JsonResponse
@@ -199,8 +202,13 @@ class AuthController extends Controller
             throw new UserNotFoundException();
         }
 
-        Service::otp()->generateAndSend($user);
-        return response()->json(['message' => 'OTP sent to your email']);
+        $token = Str::uuid()->toString();
+        Service::otp()->generateAndSend($user, $token); // OK
+
+        return response()->json([
+            'message' => 'OTP sent to your email',
+            'user_id' => $user->id,
+        ]);
     }
 
     /**
@@ -208,13 +216,13 @@ class AuthController extends Controller
      *     path="/api/verify-otp",
      *     tags={"Auth"},
      *     summary="Verify OTP for Password Reset",
-     *     description="Verify OTP and get reset token",
+     *     description="Verifies OTP and returns a reset_token used to securely reset the password.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"user_id","otp"},
+     *             required={"user_id", "otp"},
      *             @OA\Property(property="user_id", type="integer", example=1),
-     *             @OA\Property(property="otp", type="string", example="123456")
+     *             @OA\Property(property="otp", type="string", example="1234")
      *         )
      *     ),
      *     @OA\Response(
@@ -222,7 +230,7 @@ class AuthController extends Controller
      *         description="OTP verified",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="OTP verified successfully. You can now reset your password."),
-     *             @OA\Property(property="reset_token", type="string", example="a1b2c3d4e5f6"),
+     *             @OA\Property(property="reset_token", type="string", example="a1b2c3d4e5f6g7h8i9"),
      *             @OA\Property(property="user_id", type="integer", example=1)
      *         )
      *     ),

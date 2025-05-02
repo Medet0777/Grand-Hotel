@@ -159,7 +159,7 @@
                     "Auth"
                 ],
                 "summary": "Reset Password",
-                "description": "Reset user password using reset token",
+                "description": "Resets the user's password using the provided reset_token after OTP verification.",
                 "operationId": "0a6624b616e4ba5a310a61d9f7418c35",
                 "requestBody": {
                     "required": true,
@@ -169,7 +169,8 @@
                                 "required": [
                                     "email",
                                     "reset_token",
-                                    "new_password"
+                                    "new_password",
+                                    "new_password_confirmation"
                                 ],
                                 "properties": {
                                     "email": {
@@ -178,9 +179,13 @@
                                     },
                                     "reset_token": {
                                         "type": "string",
-                                        "example": "a1b2c3d4e5f6"
+                                        "example": "a1b2c3d4e5f6g7h8i9"
                                     },
                                     "new_password": {
+                                        "type": "string",
+                                        "example": "newpassword123"
+                                    },
+                                    "new_password_confirmation": {
                                         "type": "string",
                                         "example": "newpassword123"
                                     }
@@ -257,8 +262,8 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Send OTP",
-                "description": "Send OTP to user's email",
+                "summary": "Send OTP for Password Reset",
+                "description": "Sends a 4-digit OTP to the user's email address if the user exists. Returns user_id for further OTP verification.",
                 "operationId": "f23a700e9df831a8a1af7bd4c092fcf7",
                 "requestBody": {
                     "required": true,
@@ -289,12 +294,19 @@
                                         "message": {
                                             "type": "string",
                                             "example": "OTP sent to your email"
+                                        },
+                                        "user_id": {
+                                            "type": "integer",
+                                            "example": 1
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "User not found"
                     }
                 }
             }
@@ -305,7 +317,7 @@
                     "Auth"
                 ],
                 "summary": "Verify OTP for Password Reset",
-                "description": "Verify OTP and get reset token",
+                "description": "Verifies OTP and returns a reset_token used to securely reset the password.",
                 "operationId": "c4e4be2444463a153f1ca5669741bc89",
                 "requestBody": {
                     "required": true,
@@ -323,7 +335,7 @@
                                     },
                                     "otp": {
                                         "type": "string",
-                                        "example": "123456"
+                                        "example": "1234"
                                     }
                                 },
                                 "type": "object"
@@ -344,7 +356,7 @@
                                         },
                                         "reset_token": {
                                             "type": "string",
-                                            "example": "a1b2c3d4e5f6"
+                                            "example": "a1b2c3d4e5f6g7h8i9"
                                         },
                                         "user_id": {
                                             "type": "integer",
