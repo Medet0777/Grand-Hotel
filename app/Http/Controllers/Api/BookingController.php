@@ -20,7 +20,7 @@ class BookingController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $booking = Service::booking()->getBoookingById($id);
+        $booking = Service::booking()->getBookingById($id);
         if (!$booking) {
             return response()->json(['message' => 'Booking not found'], Response::HTTP_NOT_FOUND);
         }

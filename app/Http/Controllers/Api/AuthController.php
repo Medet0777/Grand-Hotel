@@ -11,10 +11,8 @@ use App\Http\Controllers\Controller;
 use App\Http\DTO\User\CreateUserDTO;
 use App\Http\DTO\User\ResetPasswordDTO;
 use App\Http\DTO\User\SignInDTO;
-use App\Http\DTO\User\UpdateUserDTO;
 use App\Http\Requests\User\PasswordResetRequest;
 use App\Http\Requests\User\SendOtpRequest;
-use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\User\UserCreateRequest;
 use App\Http\Requests\User\UserLoginRequest;
 use App\Http\Requests\User\VerifyOtpRequest;
@@ -63,7 +61,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'OTP sent to your email for verification.',
             'registration_token' => $registrationToken,
-        ], 200);
+        ]);
     }
 
     /**
@@ -95,7 +93,7 @@ class AuthController extends Controller
     public function signIn(UserLoginRequest $request): JsonResponse
     {
         $dto = SignInDTO::fromRequest($request);
-        return Service::user()->signIn($dto);
+        return Service::auth()->signIn($dto);
     }
 
     /**
@@ -135,12 +133,12 @@ class AuthController extends Controller
            throw new UserNotFoundException();
         }
 
-        if (!Service::user()->validateResetToken($user, $dto->resetToken)) {
+        if (!Service::auth()->validateResetToken($user, $dto->resetToken)) {
             throw new InvalidResetTokenException();
         }
 
-        $response = Service::user()->resetPassword($dto);
-        Service::user()->clearResetToken($user);
+        $response = Service::auth()->resetPassword($dto);
+        Service::auth()->clearResetToken($user);
 
         return $response;
     }
@@ -246,7 +244,7 @@ class AuthController extends Controller
             throw new UserNotFoundException();
         }
 
-        $resetToken = Service::user()->verifyOtpForPasswordReset($user, $request->otp);
+        $resetToken = Service::auth()->verifyOtpForPasswordReset($user, $request->otp);
 
         if (!$resetToken) {
             throw new InvalidOtpException();
@@ -259,67 +257,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/profile",
-     *     summary="Update user profile",
-     *     description="Allows the authenticated user to update their name, nickname, and phone number. Email cannot be changed.",
-     *     operationId="updateUserProfile",
-     *     tags={"User"},
-     *     security={{"sanctum": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "nickname", "phone_number"},
-     *             @OA\Property(property="name", type="string", example="Gustavo"),
-     *             @OA\Property(property="nickname", type="string", example="gus123"),
-     *             @OA\Property(property="phone_number", type="string", example="+19003430")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Profile updated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Profile updated successfully")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(
-     *                 property="errors",
-     *                 type="object",
-     *                 example={"phone_number": {"The phone number has already been taken."}}
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     )
-     * )
-     */
 
-    public function updateProfile(UpdateUserRequest $request)
-    {
-        $dto = new UpdateUserDTO(
-            name: $request->name,
-            nickname: $request->nickname,
-            phone_number: $request->phone_number
-        );
-
-        $userId = auth()->id();
-
-        Service::user()->updateUser($userId, $dto);
-
-        return response()->json(['message' => 'Profile updated successfully']);
-    }
 
     /**
      * @OA\Post(

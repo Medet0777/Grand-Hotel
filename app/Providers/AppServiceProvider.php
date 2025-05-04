@@ -7,6 +7,7 @@ use App\Contracts\BookingContracts\BookingServiceContract;
 use App\Contracts\HotelContracts\HotelRepositoryContract;
 use App\Contracts\RoomContracts\RoomRepositoryContract;
 use App\Contracts\RoomContracts\RoomServiceContract;
+use App\Contracts\UserContracts\AuthServiceContract;
 use App\Contracts\UserContracts\OtpServiceContract;
 use App\Contracts\UserContracts\UserRepositoryContract;
 use App\Contracts\UserContracts\UserServiceContract;
@@ -43,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(HotelServiceContract::class, HotelService::class);
         $this->app->bind(RoomRepositoryContract::class, RoomRepository::class);
         $this->app->bind(RoomServiceContract::class, RoomService::class);
-        $this->app->bind(AuthService::class, AuthService::class);
+        $this->app->bind(AuthServiceContract::class, AuthService::class);
         $this->app->bind(BookingRepositoryContract::class, BookingRepository::class);
         $this->app->bind(BookingServiceContract::class, BookingService::class);
 
@@ -64,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
 
                 public function auth()
                 {
-                    return $this->app->make(AuthService::class);
+                    return $this->app->make(AuthServiceContract::class);
                 }
 
                 public function otp()
