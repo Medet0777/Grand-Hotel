@@ -1153,6 +1153,227 @@
                 ]
             }
         },
+        "/api/reviews": {
+            "post": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Создать отзыв",
+                "description": "Создает новый отзыв для указанного отеля. Требуется аутентификация пользователя.",
+                "operationId": "createReview",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "hotel_id",
+                                    "rating",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID пользователя, оставляющего отзыв",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "hotel_id": {
+                                        "description": "ID отеля, о котором оставляют отзыв",
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "rating": {
+                                        "description": "Рейтинг отеля (от 1 до 5 с шагом 0.5)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 4.5
+                                    },
+                                    "description": {
+                                        "description": "Текст отзыва",
+                                        "type": "string",
+                                        "example": "Отличный отель, отличный сервис!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Успешно создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Review created successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to create review: Internal server error."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hotels/{hotelId}/reviews": {
+            "get": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Получить отзывы об отеле",
+                "description": "Возвращает все отзывы для указанного отеля.",
+                "operationId": "getReviewsByHotel",
+                "parameters": [
+                    {
+                        "name": "hotelId",
+                        "in": "path",
+                        "description": "ID отеля, для которого нужно получить отзывы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "user_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "hotel_id": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "rating": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 4.5
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Отличный отель, отличный сервис!"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Отель не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hotel not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/rooms": {
             "get": {
                 "tags": [
@@ -1589,6 +1810,10 @@
         {
             "name": "User",
             "description": "User"
+        },
+        {
+            "name": "Reviews",
+            "description": "Reviews"
         }
     ]
 }

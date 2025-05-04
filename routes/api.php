@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
@@ -57,3 +58,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/{userId}/avatar', [ProfileController::class, 'uploadAvatar']);
     Route::get('/users/{userId}', [ProfileController::class, 'getUserData']);
 });
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'createReview']);
+});
+Route::get('/hotels/{hotelId}/reviews', [ReviewController::class, 'getReviewByHotel']);
