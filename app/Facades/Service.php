@@ -4,11 +4,11 @@ namespace App\Facades;
 
 use App\Contracts\HotelContracts\HotelServiceContract;
 use App\Contracts\RoomContracts\RoomServiceContract;
+use App\Contracts\UserContracts\AuthServiceContract;
 use App\Contracts\UserContracts\OtpServiceContract;
 use App\Contracts\UserContracts\UserServiceContract;
 use App\Contracts\WishlistContracts\WishlistServiceContract;
 use App\Services\BookingServices\BookingService;
-use App\Services\UserServices\AuthService;
 use Illuminate\Support\Facades\Facade;
 
 
@@ -18,8 +18,9 @@ use Illuminate\Support\Facades\Facade;
  * @method WishlistServiceContract wishlist()
  * @method HotelServiceContract hotel()
  * @method RoomServiceContract room()
- * @method AuthService auth()
+ * @method AuthServiceContract auth()
  * @method BookingService boooking()
+ *
  */
 
 

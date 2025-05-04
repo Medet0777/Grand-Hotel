@@ -16,9 +16,9 @@ class OtpService implements OtpServiceContract
     {
         $otp = rand(1000, 9999);
         $this->storeOtp($user, $otp, $token);
-        // Ensure $user is always a User object before passing to sendOtpEmail
+
         if (is_array($user)) {
-            // If $user is an array, create a User object with the email.
+
             $fakeUser = new User();
             $fakeUser->email = $user['email'];
             $this->sendOtpEmail($fakeUser, $otp);

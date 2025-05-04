@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ Route::post('/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/register/verify-otp', [AuthController::class, 'verifyRegistrationOtp']);
-Route::put('/profile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
+Route::put('/profile', [ProfileController::class, 'updateProfile'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/wishlist/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
@@ -51,3 +52,8 @@ Route::put('/rooms/{id}', [RoomController::class, 'update']);
 Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
 
 Route::get('/hotels/{hotelId}/rooms', [RoomController::class, 'getRoomsByHotel']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/users/{userId}/avatar', [ProfileController::class, 'uploadAvatar']);
+    Route::get('/users/{userId}', [ProfileController::class, 'getUserData']);
+});

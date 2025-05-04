@@ -374,95 +374,6 @@
                 }
             }
         },
-        "/api/profile": {
-            "put": {
-                "tags": [
-                    "User"
-                ],
-                "summary": "Update user profile",
-                "description": "Allows the authenticated user to update their name, nickname, and phone number. Email cannot be changed.",
-                "operationId": "updateUserProfile",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "nickname",
-                                    "phone_number"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Gustavo"
-                                    },
-                                    "nickname": {
-                                        "type": "string",
-                                        "example": "gus123"
-                                    },
-                                    "phone_number": {
-                                        "type": "string",
-                                        "example": "+19003430"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Profile updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Profile updated successfully"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "phone_number": [
-                                                    "The phone number has already been taken."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated"
-                    }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
-            }
-        },
         "/api/verify-registration-otp": {
             "post": {
                 "tags": [
@@ -1007,6 +918,239 @@
                         "description": "Некорректный запрос"
                     }
                 }
+            }
+        },
+        "/api/users/{userId}/avatar": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Upload user avatar",
+                "description": "Uploads a new avatar for the specified user.",
+                "operationId": "a9b9ebe1116f2f57c45b0b4220e3d5ba",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "avatar",
+                                    "mime_type",
+                                    "name"
+                                ],
+                                "properties": {
+                                    "avatar": {
+                                        "type": "string",
+                                        "example": "base64encodedstring"
+                                    },
+                                    "mime_type": {
+                                        "type": "string",
+                                        "example": "image/jpeg"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "avatar.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Avatar uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Avatar uploaded successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to upload avatar"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{userId}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user data with avatar",
+                "description": "Returns user's profile data including avatar information (base64).",
+                "operationId": "073f4957b7ddc519e25f90bc4c8f4cb9",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User data retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Gustavo"
+                                        },
+                                        "nickname": {
+                                            "type": "string",
+                                            "example": "gus123"
+                                        },
+                                        "avatar": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "base64encodedstring"
+                                                },
+                                                "mime_type": {
+                                                    "type": "string",
+                                                    "example": "image/jpeg"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "avatar.jpg"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/profile": {
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update user profile",
+                "description": "Allows the authenticated user to update their name, nickname, and phone number. Email cannot be changed.",
+                "operationId": "updateUserProfile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "nickname",
+                                    "phone_number"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Gustavo"
+                                    },
+                                    "nickname": {
+                                        "type": "string",
+                                        "example": "gus123"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "+19003430"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profile updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "phone_number": [
+                                                    "The phone number has already been taken."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/rooms": {

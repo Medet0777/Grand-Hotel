@@ -18,4 +18,8 @@ interface UserRepositoryContract
     public function update(int $id, UpdateUserDTO $dto): bool;
 
     public function delete(int $id): bool;
+
+    public function save(User $user): void;
+
+    public function findWithAvatar(int $id): ?User;
 }
