@@ -485,18 +485,29 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "location",
+                                    "location_name",
                                     "price_per_night",
-                                    "description"
+                                    "latitude",
+                                    "longitude"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "Luxury Inn"
                                     },
-                                    "location": {
+                                    "location_name": {
                                         "type": "string",
                                         "example": "Almaty"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 43.25670000000000214868123293854296207427978515625
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 76.9286000000000029785951483063399791717529296875
                                     },
                                     "price_per_night": {
                                         "type": "number",
@@ -672,6 +683,20 @@
                                     "name": {
                                         "type": "string",
                                         "example": "Grand Hotel Updated"
+                                    },
+                                    "location_name": {
+                                        "type": "string",
+                                        "example": "Astana"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 43.25670000000000214868123293854296207427978515625
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 76.9286000000000029785951483063399791717529296875
                                     },
                                     "rating": {
                                         "type": "number",

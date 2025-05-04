@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Hotel;
 
-use Illuminate\Contracts\Validation\ValidationRule;
+use App\Http\DTO\Hotel\CreateHotelDTO;
 use Illuminate\Foundation\Http\FormRequest;
+
 
 class CreateHotelRequest extends FormRequest
 {
@@ -18,21 +19,32 @@ class CreateHotelRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
+            'location_name' => 'required|string|max:255',
+            'latitude' => 'required|numeric|min:-90|max:90',
+            'longitude' => 'required|numeric|min:-180|max:180',
             'rating' => 'nullable|numeric|min:0|max:5',
             'price_per_night' => 'required|numeric|min:0',
             'description' => 'nullable|string',
         ];
     }
 
-    public function toDTO(): \App\Http\DTO\Hotel\CreateHotelDTO
+
+    public function toDTO(): CreateHotelDTO
     {
-        return \App\Http\DTO\Hotel\CreateHotelDTO::fromRequest($this);
+        return new CreateHotelDTO(
+            name: $this->input('name'),
+            location_name: $this->input('location_name'),
+            latitude: $this->input('latitude'),
+            longitude: $this->input('longitude'),
+            rating: $this->input('rating'),
+            price_per_night: $this->input('price_per_night'),
+            description: $this->input('description'),
+        );
     }
 }
