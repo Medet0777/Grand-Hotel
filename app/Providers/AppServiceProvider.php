@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Contracts\BookingContracts\BookingRepositoryContract;
 use App\Contracts\BookingContracts\BookingServiceContract;
 use App\Contracts\HotelContracts\HotelRepositoryContract;
+use App\Contracts\ReviewContarcts\ReviewRepositoryContract;
+use App\Contracts\ReviewContarcts\ReviewServiceContract;
 use App\Contracts\RoomContracts\RoomRepositoryContract;
 use App\Contracts\RoomContracts\RoomServiceContract;
 use App\Contracts\UserContracts\AuthServiceContract;
@@ -15,10 +17,12 @@ use App\Contracts\WishlistContracts\WishlistRepositoryContract;
 use App\Contracts\WishlistContracts\WishlistServiceContract;
 use App\Repositories\BookingRepository;
 use App\Repositories\HotelRepository;
+use App\Repositories\ReviewRepository;
 use App\Repositories\RoomRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WishlistRepository;
 use App\Services\BookingServices\BookingService;
+use App\Services\ReviewServices\ReviewService;
 use App\Services\RoomServices\RoomService;
 use App\Services\UserServices\AuthService;
 use App\Services\UserServices\OtpService;
@@ -27,6 +31,7 @@ use App\Services\WishlistServices\WishlistService;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\HotelContracts\HotelServiceContract;
 use App\Services\HotelServices\HotelService;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AuthServiceContract::class, AuthService::class);
         $this->app->bind(BookingRepositoryContract::class, BookingRepository::class);
         $this->app->bind(BookingServiceContract::class, BookingService::class);
+        $this->app->bind(ReviewRepositoryContract::class, ReviewRepository::class);
+        $this->app->bind(ReviewServiceContract::class, ReviewService::class);
 
         // Фасад Service
         $this->app->singleton('service', function ($app) {
@@ -91,6 +98,11 @@ class AppServiceProvider extends ServiceProvider
                 {
                     return $this->app->make(BookingServiceContract::class);
                 }
+
+                public function review()
+                {
+                    return $this->app->make(ReviewServiceContract::class);
+                }
             };
         });
 
@@ -126,6 +138,11 @@ class AppServiceProvider extends ServiceProvider
                 public function booking()
                 {
                     return $this->app->make(BookingRepositoryContract::class);
+                }
+
+                public function review()
+                {
+                    return $this->app->make(ReviewRepositoryContract::class);
                 }
             };
         });
