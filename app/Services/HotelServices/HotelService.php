@@ -12,43 +12,43 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class HotelService implements HotelServiceContract
 {
-    public function getAllHotels(): Collection
+    public function getAll(): Collection
     {
         return Repository::hotel()->all();
     }
 
-    public function getPaginatedHotels(int $perPage = 15): LengthAwarePaginator
+    public function getPaginated(int $perPage = 15): LengthAwarePaginator
     {
         return Repository::hotel()->paginate($perPage);
     }
 
-    public function getHotelById(int $id): ?Hotel
+    public function getById(int $id): ?Hotel
     {
         return Repository::hotel()->findById($id);
     }
 
-    public function createNewHotel(CreateHotelDTO $dto): Hotel
+    public function create(CreateHotelDTO $dto): Hotel
     {
         return Repository::hotel()->create($dto);
     }
 
-    public function updateHotelDetails(int $id, UpdateHotelDTO $dto): bool
+    public function update(int $id, UpdateHotelDTO $dto): bool
     {
         return Repository::hotel()->update($id, $dto);
     }
 
-    public function deleteHotel(int $id): bool
+    public function delete(int $id): bool
     {
         return Repository::hotel()->delete($id);
     }
 
-    public function getPopularHotels(int $limit = 10): Collection
+    public function getPopular(): Collection
     {
-        return Repository::hotel()->getPopular($limit);
+        return Repository::hotel()->getPopular();
     }
 
-    public function searchHotelsByLocation(string $location): Collection
+    public function getRandom(): Collection
     {
-        return Repository::hotel()->searchByLocation($location);
+        return Repository::hotel()->getRandomly();
     }
 }

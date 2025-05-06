@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\HotelNotFoundException;
 use App\Facades\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Hotel\CreateHotelRequest;
 use App\Http\Requests\Hotel\UpdateHotelRequest;
 use App\Http\Resources\HotelResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -49,7 +49,7 @@ class HotelController extends Controller
      */
     public function index(): JsonResponse
     {
-        $hotels = Service::hotel()->getAllHotels();
+        $hotels = Service::hotel()->getAll();
         return HotelResource::collection($hotels)->response()->setStatusCode(Response::HTTP_OK);
     }
 
@@ -96,7 +96,7 @@ class HotelController extends Controller
     public function store(CreateHotelRequest $request): JsonResponse
     {
         $dto = $request->toDTO();
-        $hotel = Service::hotel()->createNewHotel($dto);
+        $hotel = Service::hotel()->create($dto);
         return (new HotelResource($hotel))->response()->setStatusCode(Response::HTTP_CREATED);
     }
 
@@ -133,12 +133,13 @@ class HotelController extends Controller
      * description="Отель не найден"
      * )
      * )
+     * @throws HotelNotFoundException
      */
     public function show(int $id): JsonResponse
     {
-        $hotel = Service::hotel()->getHotelById($id);
+        $hotel = Service::hotel()->getById($id);
         if (!$hotel) {
-            return response()->json(['message' => 'Hotel not found'], Response::HTTP_NOT_FOUND);
+            throw new HotelNotFoundException($id);
         }
         return (new HotelResource($hotel))->response()->setStatusCode(Response::HTTP_OK);
     }
@@ -192,15 +193,16 @@ class HotelController extends Controller
      * description="Ошибка валидации"
      * )
      * )
+     * @throws HotelNotFoundException
      */
     public function update(UpdateHotelRequest $request, int $id): JsonResponse
     {
         $dto = $request->toDTO();
-        if (Service::hotel()->updateHotelDetails($id, $dto)) {
-            $hotel = Service::hotel()->getHotelById($id);
+        if (Service::hotel()->update($id, $dto)) {
+            $hotel = Service::hotel()->getById($id);
             return (new HotelResource($hotel))->response()->setStatusCode(Response::HTTP_OK);
         }
-        return response()->json(['message' => 'Hotel not found'], Response::HTTP_NOT_FOUND);
+        throw new HotelNotFoundException($id);
     }
 
     /**
@@ -225,13 +227,14 @@ class HotelController extends Controller
      * description="Отель не найден"
      * )
      * )
+     * @throws HotelNotFoundException
      */
     public function destroy(int $id): JsonResponse
     {
-        if (Service::hotel()->deleteHotel($id)) {
+        if (Service::hotel()->delete($id)) {
             return response()->json(['message' => 'Hotel deleted successfully'], Response::HTTP_NO_CONTENT);
         }
-        return response()->json(['message' => 'Hotel not found'], Response::HTTP_NOT_FOUND);
+        throw new HotelNotFoundException($id);
     }
 
     /**
@@ -246,17 +249,22 @@ class HotelController extends Controller
      * @OA\JsonContent(
      * type="array",
      * @OA\Items(
+     * @OA\Schema(
      * type="object",
      * @OA\Property(property="id", type="integer", example=3),
      * @OA\Property(property="name", type="string", example="Best Western"),
      * @OA\Property(property="location", type="string", example="Karaganda"),
+     * @OA\Property(property="location_name", type="string", example="Karaganda"),
      * @OA\Property(property="rating", type="number", format="float", example=4.5),
+     * @OA\Property(property="latitude", type="number", format="float", example="43.2567"),
+     * @OA\Property(property="longitude", type="number", format="float", example="76.9286"),
      * @OA\Property(property="price_per_night", type="number", format="float", example=90.00),
      * @OA\Property(property="description", type="string", example="A popular choice for travelers."),
      * @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-28T12:00:00.000000Z"),
      * @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-28T12:00:00.000000Z")
      * )
      * )
+     * )
      * ),
      * @OA\Response(
      * response=400,
@@ -264,40 +272,38 @@ class HotelController extends Controller
      * )
      * )
      */
-    public function popular(): JsonResponse
+    public function getPopular(): JsonResponse
     {
-        $popularHotels = Service::hotel()->getPopularHotels();
-        return HotelResource::collection($popularHotels)->response()->setStatusCode(Response::HTTP_OK);
+        $hotels = Service::hotel()->getPopular();
+        return response()->json($hotels, Response::HTTP_OK);
     }
 
     /**
      * @OA\Get(
-     * path="/api/hotels/search",
+     * path="/api/hotels/random",
      * tags={"Hotels"},
-     * summary="Поиск отелей по местоположению",
-     * description="Возвращает список отелей, найденных по указанному местоположению.",
-     * @OA\Parameter(
-     * name="location",
-     * in="query",
-     * required=true,
-     * description="Местоположение для поиска",
-     * @OA\Schema(type="string", example="Almaty")
-     * ),
+     * summary="Получить список случайных отелей",
+     * description="Возвращает список случайно выбранных отелей.",
      * @OA\Response(
      * response=200,
      * description="Успешный запрос",
      * @OA\JsonContent(
      * type="array",
      * @OA\Items(
+     * @OA\Schema(
      * type="object",
-     * @OA\Property(property="id", type="integer", example=2),
-     * @OA\Property(property="name", type="string", example="Kazakhstan Hotel"),
-     * @OA\Property(property="location", type="string", example="Almaty"),
-     * @OA\Property(property="rating", type="number", format="float", example=4.2),
-     * @OA\Property(property="price_per_night", type="number", format="float", example=120.00),
-     * @OA\Property(property="description", type="string", example="A historic hotel in Almaty."),
-     * @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-29T08:00:00.000000Z"),
-     * @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-29T08:00:00.000000Z")
+     * @OA\Property(property="id", type="integer", example=3),
+     * @OA\Property(property="name", type="string", example="Best Western"),
+     * @OA\Property(property="location", type="string", example="Karaganda"),
+     * @OA\Property(property="location_name", type="string", example="Karaganda"),
+     * @OA\Property(property="rating", type="number", format="float", example=4.5),
+     * @OA\Property(property="latitude", type="number", format="float", example="43.2567"),
+     * @OA\Property(property="longitude", type="number", format="float", example="76.9286"),
+     * @OA\Property(property="price_per_night", type="number", format="float", example=90.00),
+     * @OA\Property(property="description", type="string", example="A popular choice for travelers."),
+     * @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-28T12:00:00.000000Z"),
+     * @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-28T12:00:00.000000Z")
+     * )
      * )
      * )
      * ),
@@ -307,13 +313,9 @@ class HotelController extends Controller
      * )
      * )
      */
-    public function search(Request $request): JsonResponse
+    public function getRandom(): JsonResponse
     {
-        $location = $request->query('location');
-        if (!$location) {
-            return response()->json(['message' => 'Location parameter is required'], Response::HTTP_BAD_REQUEST);
-        }
-        $hotels = Service::hotel()->searchHotelsByLocation($location);
-        return HotelResource::collection($hotels)->response()->setStatusCode(Response::HTTP_OK);
+        $hotels = Service::hotel()->getRandom();
+        return response()->json($hotels, Response::HTTP_OK);
     }
 }

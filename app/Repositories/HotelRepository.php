@@ -20,9 +20,11 @@ class HotelRepository implements HotelRepositoryContract
         return Hotel::all();
     }
 
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function paginate(int $perPage = 15,int $page = null): LengthAwarePaginator
     {
-        return Hotel::paginate($perPage);
+        $page = $page ?? LengthAwarePaginator::resolveCurrentPage();
+
+        return Hotel::paginate($perPage, ['*'], 'page', $page);
     }
 
     public function findById(int $id): ?Hotel
@@ -110,13 +112,17 @@ class HotelRepository implements HotelRepositoryContract
         }
     }
 
-    public function searchByLocation(string $location): Collection
+    public function getPopular(): Collection
     {
-        return Hotel::where('location', 'like', '%' . $location . '%')->get();
+        return Hotel::orderByDesc('rating')
+            ->limit(10)
+            ->get();
     }
 
-    public function getPopular(int $limit = 10): Collection
+    public function getRandomly(): Collection
     {
-        return Hotel::orderBy('rating', 'desc')->take($limit)->get();
+        return Hotel::inRandomOrder()
+            ->limit(10)
+            ->get();
     }
 }
