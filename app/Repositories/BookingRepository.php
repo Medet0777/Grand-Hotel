@@ -14,17 +14,20 @@ class BookingRepository implements BookingRepositoryContract
 
     public function all(): Collection
     {
-        return Booking::all();
+        return Booking::select('id', 'user_id', 'hotel_id', 'room_id', 'check_in_date', 'check_out_date', 'status')->get();
     }
 
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function paginate(int $perPage = 15, int $page = null): LengthAwarePaginator
     {
-        return Booking::paginate($perPage);
+        $page = $page ?? LengthAwarePaginator::resolveCurrentPage();
+
+        return Booking::select('id', 'user_id', 'hotel_id', 'room_id', 'check_in_date', 'check_out_date', 'status')
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function findById(int $id): ?Booking
     {
-       return Booking::find($id);
+        return Booking::select('id', 'user_id', 'hotel_id', 'room_id', 'check_in_date', 'check_out_date', 'status')->find($id);
     }
 
     public function create(CreateBookingDTO $dto): Booking

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Facade;
  * @method HotelServiceContract hotel()
  * @method RoomServiceContract room()
  * @method AuthService auth()
- * @method BookingService boooking()
+ * @method BookingService booking()
  */
 
 
