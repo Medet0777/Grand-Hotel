@@ -485,18 +485,29 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "location",
+                                    "location_name",
                                     "price_per_night",
-                                    "description"
+                                    "latitude",
+                                    "longitude"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "Luxury Inn"
                                     },
-                                    "location": {
+                                    "location_name": {
                                         "type": "string",
                                         "example": "Almaty"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 43.25670000000000214868123293854296207427978515625
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 76.9286000000000029785951483063399791717529296875
                                     },
                                     "price_per_night": {
                                         "type": "number",
@@ -673,6 +684,20 @@
                                         "type": "string",
                                         "example": "Grand Hotel Updated"
                                     },
+                                    "location_name": {
+                                        "type": "string",
+                                        "example": "Astana"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 43.25670000000000214868123293854296207427978515625
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 76.9286000000000029785951483063399791717529296875
+                                    },
                                     "rating": {
                                         "type": "number",
                                         "format": "float",
@@ -783,7 +808,7 @@
                 ],
                 "summary": "Получить список популярных отелей",
                 "description": "Возвращает список наиболее популярных отелей.",
-                "operationId": "8337ad99c3d4797d65b5cc236f25c692",
+                "operationId": "874ac060ec76b44346f2cd081b387a6b",
                 "responses": {
                     "200": {
                         "description": "Успешный запрос",
@@ -791,47 +816,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer",
-                                                "example": 3
-                                            },
-                                            "name": {
-                                                "type": "string",
-                                                "example": "Best Western"
-                                            },
-                                            "location": {
-                                                "type": "string",
-                                                "example": "Karaganda"
-                                            },
-                                            "rating": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 4.5
-                                            },
-                                            "price_per_night": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 90
-                                            },
-                                            "description": {
-                                                "type": "string",
-                                                "example": "A popular choice for travelers."
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-28T12:00:00.000000Z"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-28T12:00:00.000000Z"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
+                                    "items": {}
                                 }
                             }
                         }
@@ -842,26 +827,14 @@
                 }
             }
         },
-        "/api/hotels/search": {
+        "/api/hotels/random": {
             "get": {
                 "tags": [
                     "Hotels"
                 ],
-                "summary": "Поиск отелей по местоположению",
-                "description": "Возвращает список отелей, найденных по указанному местоположению.",
-                "operationId": "ab62d51a8d078496dee595c6d2efcf9f",
-                "parameters": [
-                    {
-                        "name": "location",
-                        "in": "query",
-                        "description": "Местоположение для поиска",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "Almaty"
-                        }
-                    }
-                ],
+                "summary": "Получить список случайных отелей",
+                "description": "Возвращает список случайно выбранных отелей.",
+                "operationId": "66e3a89fda799d1f85ed85158fab23f5",
                 "responses": {
                     "200": {
                         "description": "Успешный запрос",
@@ -869,47 +842,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer",
-                                                "example": 2
-                                            },
-                                            "name": {
-                                                "type": "string",
-                                                "example": "Kazakhstan Hotel"
-                                            },
-                                            "location": {
-                                                "type": "string",
-                                                "example": "Almaty"
-                                            },
-                                            "rating": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 4.20000000000000017763568394002504646778106689453125
-                                            },
-                                            "price_per_night": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 120
-                                            },
-                                            "description": {
-                                                "type": "string",
-                                                "example": "A historic hotel in Almaty."
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-29T08:00:00.000000Z"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-29T08:00:00.000000Z"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
+                                    "items": {}
                                 }
                             }
                         }

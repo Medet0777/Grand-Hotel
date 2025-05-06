@@ -32,11 +32,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/hotels', [HotelController::class, 'index']);
 Route::post('/hotels', [HotelController::class, 'store']);
+Route::get('/hotels/popular', [HotelController::class, 'getPopular']);
+Route::get('/hotels/random', [HotelController::class, 'getRandom']);
 Route::get('/hotels/{id}', [HotelController::class, 'show']);
 Route::put('/hotels/{id}', [HotelController::class, 'update']);
 Route::delete('/hotels/{id}', [HotelController::class, 'destroy']);
-Route::get('/hotels/popular', [HotelController::class, 'popular'])->name('hotels.popular');
-Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
+
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings', [BookingController::class, 'index']);
