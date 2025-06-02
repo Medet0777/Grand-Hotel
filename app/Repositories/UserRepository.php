@@ -56,4 +56,9 @@ class UserRepository implements UserRepositoryContract
     {
         $user->save();
     }
+
+    public function findWithAvatar(int $id): ?User
+    {
+        return User::with('avatar')->findOrFail($id);
+    }
 }

@@ -5,7 +5,9 @@ namespace App\Models;
  use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+ use Illuminate\Database\Eloquent\Relations\BelongsTo;
+ use Illuminate\Database\Eloquent\Relations\HasMany;
+ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
  use Laravel\Sanctum\HasApiTokens;
 
@@ -28,33 +30,39 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'nickname',
         'phone_number',
+        'avatar_id',
     ];
 
-    public function bookings()
+    public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
     }
 
 
-    public function reviews()
+    public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
+    public function avatar(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'avatar_id');
+    }
 
-    public function notifications()
+
+    public function notifications():HasMany
     {
         return $this->hasMany(Notification::class);
     }
 
 
-    public function wishlists()
+    public function wishlists():HasMany
     {
         return $this->hasMany(Wishlist::class);
     }
 
 
-    public function userRatings()
+    public function userRatings():HasMany
     {
         return $this->hasMany(UserRating::class);
     }
