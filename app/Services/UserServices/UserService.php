@@ -2,111 +2,80 @@
 
 namespace App\Services\UserServices;
 
-use App\Exceptions\InvalidCredentialsException;
+
 use App\Facades\Repository;
-use App\Facades\Service;
+
 use App\Contracts\UserContracts\UserServiceContract;
 use App\Http\DTO\User\UpdateUserDTO;
-use App\Http\Resources\UserResource;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Http\DTO\User\CreateUserDTO;
-use App\Http\DTO\User\SignInDTO;
-use App\Http\DTO\User\ResetPasswordDTO;
+use App\Http\DTO\User\UploadAvatarDTO;
+use App\Models\File;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 
 class UserService implements UserServiceContract
 {
-
-
-    public function createUser(CreateUserDTO $data): User
-    {
-        return Repository::user()->create($data);
-    }
-
-    public function signIn(SignInDTO $data): JsonResponse
-    {
-        $user = Repository::user()->findByEmail($data->email);
-
-        if (!$user || !Hash::check($data->password, $user->password)) {
-            throw new InvalidCredentialsException();
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Successfully logged in',
-            'token' => $token,
-            'user' => new UserResource($user),
-        ]);
-    }
-
-    public function resetPassword(ResetPasswordDTO $data): JsonResponse
-    {
-        $user = Repository::user()->findByEmail($data->email);
-
-        if (!$user) {
-            throw new NotFoundHttpException();
-        }
-
-        $user->password = Hash::make($data->newPassword);
-        Repository::user()->save($user);
-
-        return response()->json(['message' => 'Password successfully updated', 'user' => new UserResource($user)]);
-    }
-
-    public function verifyOtpForPasswordReset(User $user, string $otp): ?string
-    {
-        if (Service::otp()->verify($user, $otp)) {
-            Service::otp()->clear($user);
-            $resetToken = Str::random(60);
-            Cache::put("password_reset_token_" . $user->id, $resetToken, 3600);
-            return $resetToken;
-        }
-        return null;
-    }
-
-    public function validateResetToken(User $user, string $resetToken): bool
-    {
-        $cachedToken = Cache::get("password_reset_token_" . $user->id);
-        return $cachedToken === $resetToken;
-    }
-
-    public function clearResetToken(User $user): void
-    {
-        Cache::forget("password_reset_token_" . $user->id);
-    }
-
-    public function verifyRegistrationOtp(User $user, string $otp): JsonResponse
-    {
-        if (Service::otp()->verify($user, $otp)) {
-            Service::otp()->clear($user);
-            $user->markEmailAsVerified();
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return response()->json([
-                'message' => 'Email verified successfully. You are now logged in.',
-                'token' => $token,
-                'user' => new UserResource($user),
-            ]);
-        }
-        return response()->json(['message' => 'Invalid OTP'], 422);
-    }
-
     public function updateUser(int $id, UpdateUserDTO $dto): bool
     {
         return Repository::user()->update($id, $dto);
     }
-    public function isNicknameTaken(string $nickname): bool
+
+    public function uploadAvatar(UploadAvatarDTO $dto, int $userId): void
     {
-        return User::where('nickname', $nickname)->exists();
+        try {
+            DB::beginTransaction();
+
+            $fileData = base64_decode($dto->avatar, true);
+
+            if ($fileData === false) {
+                throw new Exception('Invalid base64 avatar string.');
+            }
+
+            $file = new File();
+            $file->data = base64_encode($fileData);
+            $file->mime_type = $dto->mime_type;
+            $file->name = $dto->name ?? 'avatar.jpg';
+            $file->save();
+
+
+            $user = Repository::user()->findById($userId);
+            $user->avatar_id = $file->id;
+            $user->save();
+
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error('Avatar upload error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
-    public function isPhoneNumberTaken(string $phoneNumber): bool
+    public function getUserDataWithAvatar(int $userId): array
     {
-        return User::where('phone_number', $phoneNumber)->exists();
+        $user = Repository::user()->findWithAvatar($userId);
+
+        $avatarData = null;
+        $avatarMimeType = null;
+        $avatarName = null;
+
+        if ($user->avatar) {
+            $avatarData = base64_encode($user->avatar->data);
+            $avatarMimeType = $user->avatar->mime_type;
+            $avatarName = $user->avatar->name;
+        }
+
+        $userData = [
+            'name' => $user->name,
+            'nickname' => $user->nickname,
+            'avatar' => $avatarData ? [
+                'data' => $avatarData,
+                'mime_type' => $avatarMimeType,
+                'name' => $avatarName,
+            ] : null,
+        ];
+
+        return $userData;
     }
 }

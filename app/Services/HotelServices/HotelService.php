@@ -2,9 +2,10 @@
 
 namespace App\Services\HotelServices;
 
-use App\Contracts\HotelContracts\HotelRepositoryContract;
 use App\Contracts\HotelContracts\HotelServiceContract;
+use App\Facades\Repository;
 use App\Http\DTO\Hotel\CreateHotelDTO;
+use App\Http\DTO\Hotel\FilterHotelDTO;
 use App\Http\DTO\Hotel\UpdateHotelDTO;
 use App\Models\Hotel;
 use Illuminate\Database\Eloquent\Collection;
@@ -12,51 +13,53 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class HotelService implements HotelServiceContract
 {
-    protected HotelRepositoryContract $hotelRepository;
-
-    public function __construct(HotelRepositoryContract $hotelRepository)
+    public function getAll(): Collection
     {
-        $this->hotelRepository = $hotelRepository;
+        return Repository::hotel()->all();
     }
 
-    public function getAllHotels(): Collection
+    public function getPaginated(int $perPage = 15): LengthAwarePaginator
     {
-        return $this->hotelRepository->all();
+        return Repository::hotel()->paginate($perPage);
     }
 
-    public function getPaginatedHotels(int $perPage = 15): LengthAwarePaginator
+    public function getById(int $id): ?Hotel
     {
-        return $this->hotelRepository->paginate($perPage);
+        return Repository::hotel()->findById($id);
     }
 
-    public function getHotelById(int $id): ?Hotel
+    public function create(CreateHotelDTO $dto): Hotel
     {
-        return $this->hotelRepository->findById($id);
+        return Repository::hotel()->create($dto);
     }
 
-    public function createNewHotel(CreateHotelDTO $dto): Hotel
+    public function update(int $id, UpdateHotelDTO $dto): bool
     {
-        return $this->hotelRepository->create($dto);
+        return Repository::hotel()->update($id, $dto);
     }
 
-    public function updateHotelDetails(int $id, UpdateHotelDTO $dto): bool
+    public function delete(int $id): bool
     {
-        return $this->hotelRepository->update($id, $dto);
+        return Repository::hotel()->delete($id);
     }
 
-    public function deleteHotel(int $id): bool
+    public function getPopular(): Collection
     {
-        return $this->hotelRepository->delete($id);
+        return Repository::hotel()->getPopular();
     }
 
-    public function getPopularHotels(int $limit = 10): Collection
+    public function getRandom(): Collection
     {
-        return $this->hotelRepository->getPopular($limit);
+        return Repository::hotel()->getRandomly();
     }
 
-    public function searchHotelsByLocation(string $location): Collection
+    public function search(string $query): Collection
     {
-        return $this->hotelRepository->searchByLocation($location);
+        return Repository::hotel()->search($query);
     }
 
+    public function filter(FilterHotelDTO $dto): Collection
+    {
+        return Repository::hotel()->filter($dto);
+    }
 }
