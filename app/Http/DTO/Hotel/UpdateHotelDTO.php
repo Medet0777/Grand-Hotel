@@ -1,38 +1,37 @@
 <?php
+
 namespace App\Http\DTO\Hotel;
 
 use App\Http\Requests\Hotel\UpdateHotelRequest;
+use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\DataTransferObject\Attributes\CastWith;
+use App\Casts\FloatCast;
 
-class UpdateHotelDTO
+class UpdateHotelDTO extends DataTransferObject
 {
     public ?string $name;
-    public ?string $location;
+    public ?string $location_name;
+    #[CastWith(FloatCast::class)]
+    public ?float $latitude;
+    #[CastWith(FloatCast::class)]
+    public ?float $longitude;
     public ?float $rating;
     public ?float $price_per_night;
     public ?string $description;
 
-    public function __construct(
-        ?string $name = null,
-        ?string $location = null,
-        ?float $rating = null,
-        ?float $price_per_night = null,
-        ?string $description = null
-    ) {
-        $this->name = $name;
-        $this->location = $location;
-        $this->rating = $rating;
-        $this->price_per_night = $price_per_night;
-        $this->description = $description;
-    }
 
     public static function fromRequest(UpdateHotelRequest $request): self
     {
-        return new self(
-            $request->input('name'),
-            $request->input('location'),
-            $request->input('rating'),
-            $request->input('price_per_night'),
-            $request->input('description')
-        );
+        $validatedData = $request->validated();
+
+        return new self([
+            'name' => $validatedData['name'] ?? null,
+            'location_name' => $validatedData['location_name'] ?? null,
+            'latitude' => $validatedData['latitude'] ?? null,
+            'longitude' => $validatedData['longitude'] ?? null,
+            'rating' => $validatedData['rating'] ?? null,
+            'price_per_night' => $validatedData['price_per_night'] ?? null,
+            'description' => $validatedData['description'] ?? null,
+        ]);
     }
 }
