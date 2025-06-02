@@ -14,32 +14,32 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class BookingService implements BookingServiceContract
 {
 
-    public function getAllBookings(): Collection
+    public function getAll(): Collection
     {
         return Repository::booking()->all();
     }
 
-    public function getPaginatedBookings(int $perPage = 15): LengthAwarePaginator
+    public function getPaginated(int $perPage = 15): LengthAwarePaginator
     {
        return Repository::booking()->paginate($perPage);
     }
 
-    public function getBookingById(int $id): ?Booking
+    public function getById(int $id): ?Booking
     {
        return Repository::booking()->findById($id);
     }
 
-    public function createBooking(CreateBookingDTO $dto): Booking
+    public function create(CreateBookingDTO $dto): Booking
     {
         return Repository::booking()->create($dto);
     }
 
-    public function updateBooking(int $id, UpdateBookingDTO $dto): Booking
+    public function update(int $id, UpdateBookingDTO $dto): Booking
     {
         return Repository::booking()->update($id, $dto);
     }
 
-    public function deleteBooking(int $id): bool
+    public function delete(int $id): bool
     {
        return Repository::booking()->delete($id);
     }

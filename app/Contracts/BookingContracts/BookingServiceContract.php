@@ -10,15 +10,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface BookingServiceContract
 {
-    public function getAllBookings(): Collection;
+    public function getAll(): Collection;
 
-    public function getPaginatedBookings(int $perPage = 15): LengthAwarePaginator;
+    public function getPaginated(int $perPage = 15): LengthAwarePaginator;
 
-    public function getBookingById(int $id): ?Booking;
+    public function getById(int $id): ?Booking;
 
-    public function createBooking(CreateBookingDTO $dto): Booking;
+    public function create(CreateBookingDTO $dto): Booking;
 
-    public function updateBooking(int $id, UpdateBookingDTO $dto): Booking;
+    public function update(int $id, UpdateBookingDTO $dto): Booking;
 
-    public function deleteBooking(int $id): bool;
+    public function delete(int $id): bool;
 }
