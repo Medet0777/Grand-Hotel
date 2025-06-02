@@ -23,9 +23,10 @@ class UpdateHotelRequest extends FormRequest
             'rating' => 'nullable|numeric|min:0|max:5',
             'price_per_night' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
+            'facilities' => 'sometimes|array',
+            'facilities.*' => 'integer|exists:hotel_facilities,id',
         ];
     }
-
 
     public function toDTO(): UpdateHotelDTO
     {
@@ -37,6 +38,7 @@ class UpdateHotelRequest extends FormRequest
             rating: $this->input('rating'),
             price_per_night: $this->input('price_per_night'),
             description: $this->input('description'),
+            facilities: $this->input('facilities'),
         );
     }
 }

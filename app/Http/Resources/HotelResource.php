@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Http\Resources;
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -20,6 +23,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="rating", type="number", format="float", example=4.7),
  *     @OA\Property(property="price_per_night", type="number", format="float", example=180.00),
  *     @OA\Property(property="description", type="string", example="A luxury hotel with mountain views."),
+ *     @OA\Property(
+ *         property="facilities",
+ *         type="array",
+ *         @OA\Items(type="string", example="Wi-Fi")
+ *     ),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-30T10:00:00Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-30T11:00:00Z")
  * )
@@ -45,6 +53,7 @@ class HotelResource extends JsonResource
             'rating' => $this->rating,
             'price_per_night' => (float) $this->price_per_night,
             'description' => $this->description,
+            'facilities' => $this->whenLoaded('hotelFacilities', fn () => $this->hotelFacilities->pluck('facility_name')),
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
         ];

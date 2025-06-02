@@ -23,6 +23,8 @@ class CreateHotelRequest extends FormRequest
             'rating' => 'nullable|numeric|min:0|max:5',
             'price_per_night' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'string|max:100',
         ];
     }
 
@@ -37,6 +39,7 @@ class CreateHotelRequest extends FormRequest
             rating: $this->input('rating'),
             price_per_night: $this->input('price_per_night'),
             description: $this->input('description'),
+            facilities: $this->input('facilities', []),
         );
     }
 }
