@@ -3,22 +3,25 @@
 namespace App\Http\DTO\Hotel;
 
 use App\Http\Requests\Hotel\UpdateHotelRequest;
-use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Attributes\CastWith;
 use App\Casts\FloatCast;
+use Spatie\DataTransferObject\DataTransferObject;
 
 class UpdateHotelDTO extends DataTransferObject
 {
     public ?string $name;
     public ?string $location_name;
+
     #[CastWith(FloatCast::class)]
     public ?float $latitude;
+
     #[CastWith(FloatCast::class)]
     public ?float $longitude;
+
     public ?float $rating;
     public ?float $price_per_night;
     public ?string $description;
-
+    public ?array $facilities;
 
     public static function fromRequest(UpdateHotelRequest $request): self
     {
@@ -32,6 +35,7 @@ class UpdateHotelDTO extends DataTransferObject
             'rating' => $validatedData['rating'] ?? null,
             'price_per_night' => $validatedData['price_per_night'] ?? null,
             'description' => $validatedData['description'] ?? null,
+            'facilities' => $validatedData['facilities'] ?? null,
         ]);
     }
 }

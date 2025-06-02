@@ -37,7 +37,7 @@ class Hotel extends Model
         return $this->hasMany(UserRating::class);
     }
 
-    public function hotelFacilities(): HasMany
+    public function facilities()
     {
         return $this->hasMany(HotelFacility::class);
     }

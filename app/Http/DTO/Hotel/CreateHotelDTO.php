@@ -19,6 +19,7 @@ class CreateHotelDTO extends DataTransferObject
     public ?float $rating;
     public float $price_per_night;
     public ?string $description;
+    public array $facilities = [];
 
 
     public static function fromRequest(CreateHotelRequest $request): self
@@ -33,6 +34,7 @@ class CreateHotelDTO extends DataTransferObject
             'rating' => $validatedData['rating'] ?? null,
             'price_per_night' => $validatedData['price_per_night'],
             'description' => $validatedData['description'] ?? null,
+            'facilities' => $validatedData['facilities'] ?? [],
         ]);
     }
 }
