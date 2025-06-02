@@ -485,18 +485,29 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "location",
+                                    "location_name",
                                     "price_per_night",
-                                    "description"
+                                    "latitude",
+                                    "longitude"
                                 ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
                                         "example": "Luxury Inn"
                                     },
-                                    "location": {
+                                    "location_name": {
                                         "type": "string",
                                         "example": "Almaty"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 43.25670000000000214868123293854296207427978515625
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 76.9286000000000029785951483063399791717529296875
                                     },
                                     "price_per_night": {
                                         "type": "number",
@@ -673,6 +684,20 @@
                                         "type": "string",
                                         "example": "Grand Hotel Updated"
                                     },
+                                    "location_name": {
+                                        "type": "string",
+                                        "example": "Astana"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 43.25670000000000214868123293854296207427978515625
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 76.9286000000000029785951483063399791717529296875
+                                    },
                                     "rating": {
                                         "type": "number",
                                         "format": "float",
@@ -783,7 +808,7 @@
                 ],
                 "summary": "Получить список популярных отелей",
                 "description": "Возвращает список наиболее популярных отелей.",
-                "operationId": "8337ad99c3d4797d65b5cc236f25c692",
+                "operationId": "874ac060ec76b44346f2cd081b387a6b",
                 "responses": {
                     "200": {
                         "description": "Успешный запрос",
@@ -791,47 +816,33 @@
                             "application/json": {
                                 "schema": {
                                     "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer",
-                                                "example": 3
-                                            },
-                                            "name": {
-                                                "type": "string",
-                                                "example": "Best Western"
-                                            },
-                                            "location": {
-                                                "type": "string",
-                                                "example": "Karaganda"
-                                            },
-                                            "rating": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 4.5
-                                            },
-                                            "price_per_night": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 90
-                                            },
-                                            "description": {
-                                                "type": "string",
-                                                "example": "A popular choice for travelers."
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-28T12:00:00.000000Z"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-28T12:00:00.000000Z"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
+                                    "items": {}
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный запрос"
+                    }
+                }
+            }
+        },
+        "/api/hotels/random": {
+            "get": {
+                "tags": [
+                    "Hotels"
+                ],
+                "summary": "Получить список случайных отелей",
+                "description": "Возвращает список случайно выбранных отелей.",
+                "operationId": "66e3a89fda799d1f85ed85158fab23f5",
+                "responses": {
+                    "200": {
+                        "description": "Успешный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {}
                                 }
                             }
                         }
@@ -847,75 +858,106 @@
                 "tags": [
                     "Hotels"
                 ],
-                "summary": "Поиск отелей по местоположению",
-                "description": "Возвращает список отелей, найденных по указанному местоположению.",
+                "summary": "Поиск отелей по названию или локации",
+                "description": "Возвращает список отелей, соответствующих поисковому запросу. Ищет по названию отеля и названию локации.",
                 "operationId": "ab62d51a8d078496dee595c6d2efcf9f",
                 "parameters": [
                     {
-                        "name": "location",
+                        "name": "query",
                         "in": "query",
-                        "description": "Местоположение для поиска",
+                        "description": "Поисковый запрос (название отеля или локации)",
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "Almaty"
+                            "example": "Ritz"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешный запрос",
+                        "description": "Список найденных отелей",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "id": {
-                                                "type": "integer",
-                                                "example": 2
-                                            },
-                                            "name": {
-                                                "type": "string",
-                                                "example": "Kazakhstan Hotel"
-                                            },
-                                            "location": {
-                                                "type": "string",
-                                                "example": "Almaty"
-                                            },
-                                            "rating": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 4.20000000000000017763568394002504646778106689453125
-                                            },
-                                            "price_per_night": {
-                                                "type": "number",
-                                                "format": "float",
-                                                "example": 120
-                                            },
-                                            "description": {
-                                                "type": "string",
-                                                "example": "A historic hotel in Almaty."
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-29T08:00:00.000000Z"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "date-time",
-                                                "example": "2025-04-29T08:00:00.000000Z"
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/HotelResource"
                                             }
-                                        },
-                                        "type": "object"
-                                    }
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "description": "Некорректный запрос"
+                    "422": {
+                        "description": "Ошибка валидации параметра запроса"
+                    }
+                }
+            }
+        },
+        "/api/hotels/filter": {
+            "get": {
+                "tags": [
+                    "Hotels"
+                ],
+                "summary": "Фильтрация отелей по цене и рейтингу",
+                "description": "Возвращает список отелей, отфильтрованных по минимальной/максимальной цене и рейтингу.",
+                "operationId": "83b7f2ab696504a1676bee46ed071e01",
+                "parameters": [
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Минимальная цена за ночь",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 50
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Максимальная цена за ночь",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 200
+                        }
+                    },
+                    {
+                        "name": "rating",
+                        "in": "query",
+                        "description": "Минимальный рейтинг отеля (1-5)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список отфильтрованных отелей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/HotelResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1151,6 +1193,227 @@
                         "sanctum": []
                     }
                 ]
+            }
+        },
+        "/api/reviews": {
+            "post": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Создать отзыв",
+                "description": "Создает новый отзыв для указанного отеля. Требуется аутентификация пользователя.",
+                "operationId": "createReview",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "hotel_id",
+                                    "rating",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID пользователя, оставляющего отзыв",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "hotel_id": {
+                                        "description": "ID отеля, о котором оставляют отзыв",
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "rating": {
+                                        "description": "Рейтинг отеля (от 1 до 5 с шагом 0.5)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 4.5
+                                    },
+                                    "description": {
+                                        "description": "Текст отзыва",
+                                        "type": "string",
+                                        "example": "Отличный отель, отличный сервис!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Успешно создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Review created successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не аутентифицирован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to create review: Internal server error."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/hotels/{hotelId}/reviews": {
+            "get": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Получить отзывы об отеле",
+                "description": "Возвращает все отзывы для указанного отеля.",
+                "operationId": "getReviewsByHotel",
+                "parameters": [
+                    {
+                        "name": "hotelId",
+                        "in": "path",
+                        "description": "ID отеля, для которого нужно получить отзывы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "user_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "hotel_id": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "rating": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 4.5
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Отличный отель, отличный сервис!"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Отель не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hotel not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/rooms": {
@@ -1573,6 +1836,71 @@
             }
         }
     },
+    "components": {
+        "schemas": {
+            "HotelResource": {
+                "title": "Hotel Resource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Ritz Carlton"
+                    },
+                    "location": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Almaty"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 43.25670000000000214868123293854296207427978515625
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 76.9286000000000029785951483063399791717529296875
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "rating": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.70000000000000017763568394002504646778106689453125
+                    },
+                    "price_per_night": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 180
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A luxury hotel with mountain views."
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-04-30T10:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-04-30T11:00:00Z"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
     "tags": [
         {
             "name": "Hotels",
@@ -1589,6 +1917,10 @@
         {
             "name": "User",
             "description": "User"
+        },
+        {
+            "name": "Reviews",
+            "description": "Reviews"
         }
     ]
 }

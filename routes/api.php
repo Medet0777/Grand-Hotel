@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
@@ -31,11 +32,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/hotels', [HotelController::class, 'index']);
 Route::post('/hotels', [HotelController::class, 'store']);
+Route::get('/hotels/popular', [HotelController::class, 'getPopular']);
+Route::get('/hotels/random', [HotelController::class, 'getRandom']);
+Route::get('/hotels/search', [HotelController::class, 'search']);
+Route::get('/hotels/filter', [HotelController::class, 'filter']);
 Route::get('/hotels/{id}', [HotelController::class, 'show']);
 Route::put('/hotels/{id}', [HotelController::class, 'update']);
 Route::delete('/hotels/{id}', [HotelController::class, 'destroy']);
-Route::get('/hotels/popular', [HotelController::class, 'popular'])->name('hotels.popular');
-Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
+
+
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings', [BookingController::class, 'index']);
@@ -57,3 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/{userId}/avatar', [ProfileController::class, 'uploadAvatar']);
     Route::get('/users/{userId}', [ProfileController::class, 'getUserData']);
 });
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/reviews', [ReviewController::class, 'createReview']);
+});
+Route::get('/hotels/{hotelId}/reviews', [ReviewController::class, 'getReviewByHotel']);
