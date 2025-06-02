@@ -6,6 +6,8 @@ use App\Exceptions\HotelNotFoundException;
 use App\Facades\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Hotel\CreateHotelRequest;
+use App\Http\Requests\Hotel\FilterHotelRequest;
+use App\Http\Requests\Hotel\SearchHotelRequest;
 use App\Http\Requests\Hotel\UpdateHotelRequest;
 use App\Http\Resources\HotelResource;
 use Illuminate\Http\JsonResponse;
@@ -317,5 +319,98 @@ class HotelController extends Controller
     {
         $hotels = Service::hotel()->getRandom();
         return response()->json($hotels, Response::HTTP_OK);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/hotels/search",
+     *     tags={"Hotels"},
+     *     summary="Поиск отелей по названию или локации",
+     *     description="Возвращает список отелей, соответствующих поисковому запросу. Ищет по названию отеля и названию локации.",
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         required=true,
+     *         description="Поисковый запрос (название отеля или локации)",
+     *         @OA\Schema(
+     *             type="string",
+     *             example="Ritz"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Список найденных отелей",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/HotelResource")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации параметра запроса"
+     *     )
+     * )
+     */
+    public function search(SearchHotelRequest $request): JsonResponse
+    {
+        $query = $request->validated()['query'];
+        $hotels = Service::hotel()->search($query);
+
+        return response()->json([
+            'data' => HotelResource::collection($hotels),
+        ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/hotels/filter",
+     *     tags={"Hotels"},
+     *     summary="Фильтрация отелей по цене и рейтингу",
+     *     description="Возвращает список отелей, отфильтрованных по минимальной/максимальной цене и рейтингу.",
+     *     @OA\Parameter(
+     *         name="min_price",
+     *         in="query",
+     *         description="Минимальная цена за ночь",
+     *         required=false,
+     *         @OA\Schema(type="number", format="float", example=50.00)
+     *     ),
+     *     @OA\Parameter(
+     *         name="max_price",
+     *         in="query",
+     *         description="Максимальная цена за ночь",
+     *         required=false,
+     *         @OA\Schema(type="number", format="float", example=200.00)
+     *     ),
+     *     @OA\Parameter(
+     *         name="rating",
+     *         in="query",
+     *         description="Минимальный рейтинг отеля (1-5)",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=4)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Список отфильтрованных отелей",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/HotelResource")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function filter(FilterHotelRequest $request): JsonResponse
+    {
+        $hotels = Service::hotel()->filter($request->toDTO());
+        return response()->json([
+            'data' => HotelResource::collection($hotels)
+        ]);
     }
 }

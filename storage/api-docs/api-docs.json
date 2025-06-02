@@ -853,6 +853,115 @@
                 }
             }
         },
+        "/api/hotels/search": {
+            "get": {
+                "tags": [
+                    "Hotels"
+                ],
+                "summary": "Поиск отелей по названию или локации",
+                "description": "Возвращает список отелей, соответствующих поисковому запросу. Ищет по названию отеля и названию локации.",
+                "operationId": "ab62d51a8d078496dee595c6d2efcf9f",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Поисковый запрос (название отеля или локации)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Ritz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список найденных отелей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/HotelResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации параметра запроса"
+                    }
+                }
+            }
+        },
+        "/api/hotels/filter": {
+            "get": {
+                "tags": [
+                    "Hotels"
+                ],
+                "summary": "Фильтрация отелей по цене и рейтингу",
+                "description": "Возвращает список отелей, отфильтрованных по минимальной/максимальной цене и рейтингу.",
+                "operationId": "83b7f2ab696504a1676bee46ed071e01",
+                "parameters": [
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Минимальная цена за ночь",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 50
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Максимальная цена за ночь",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 200
+                        }
+                    },
+                    {
+                        "name": "rating",
+                        "in": "query",
+                        "description": "Минимальный рейтинг отеля (1-5)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список отфильтрованных отелей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/HotelResource"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/{userId}/avatar": {
             "post": {
                 "tags": [
@@ -1724,6 +1833,71 @@
                         "description": "Отель не найден"
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HotelResource": {
+                "title": "Hotel Resource",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Ritz Carlton"
+                    },
+                    "location": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Almaty"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 43.25670000000000214868123293854296207427978515625
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 76.9286000000000029785951483063399791717529296875
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "rating": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.70000000000000017763568394002504646778106689453125
+                    },
+                    "price_per_night": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 180
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A luxury hotel with mountain views."
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-04-30T10:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-04-30T11:00:00Z"
+                    }
+                },
+                "type": "object"
             }
         }
     },

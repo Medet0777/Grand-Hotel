@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\HotelContracts\HotelRepositoryContract;
 use App\Http\DTO\Hotel\CreateHotelDTO;
+use App\Http\DTO\Hotel\FilterHotelDTO;
 use App\Http\DTO\Hotel\UpdateHotelDTO;
 use App\Models\Hotel;
 use App\Models\Location;
@@ -125,4 +126,24 @@ class HotelRepository implements HotelRepositoryContract
             ->limit(10)
             ->get();
     }
+
+    public function search(string $query): Collection
+    {
+        return Hotel::with('location')
+        ->where('name', 'ILIKE', '%' . $query . '%')
+            ->orWhereHas('location', function ($q) use ($query) {
+                $q->where('name', 'ILIKE', '%' . $query . '%');
+            })
+            ->get();
+    }
+
+    public function filter(FilterHotelDTO $dto):Collection
+    {
+        return Hotel::with('location')
+            ->when($dto->min_price, fn($q) => $q->where('price_per_night', '>=', $dto->min_price))
+            ->when($dto->max_price, fn($q) => $q->where('price_per_night', '<=', $dto->max_price))
+            ->when($dto->rating, fn($q) => $q->where('rating', '>=', $dto->rating))
+            ->get();
+    }
+
 }

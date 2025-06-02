@@ -34,9 +34,12 @@ Route::get('/hotels', [HotelController::class, 'index']);
 Route::post('/hotels', [HotelController::class, 'store']);
 Route::get('/hotels/popular', [HotelController::class, 'getPopular']);
 Route::get('/hotels/random', [HotelController::class, 'getRandom']);
+Route::get('/hotels/search', [HotelController::class, 'search']);
+Route::get('/hotels/filter', [HotelController::class, 'filter']);
 Route::get('/hotels/{id}', [HotelController::class, 'show']);
 Route::put('/hotels/{id}', [HotelController::class, 'update']);
 Route::delete('/hotels/{id}', [HotelController::class, 'destroy']);
+
 
 
 
